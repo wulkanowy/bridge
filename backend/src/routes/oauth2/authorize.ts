@@ -13,12 +13,10 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
     request,
     reply,
   ) => {
-    console.log(request.query);
     if (!isObject(request.query)) {
       server.log.warn('Request query is not an object');
       throw server.httpErrors.badRequest();
     }
-    server.log.info(JSON.stringify(request.body));
     try {
       validateParam('client_id', request.query.client_id);
       validateParam('redirect_uri', request.query.redirect_uri);
@@ -63,7 +61,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
         sessionData.prompts.set(promptId, {
           clientId: request.query.client_id,
           redirectUri: request.query.redirect_uri,
-          scopes,
+          scopes: requestedScopes,
           state: request.query.state,
           codeChallenge: request.query.code_challenge === undefined ? undefined : {
             method: codeChallengeMethod,

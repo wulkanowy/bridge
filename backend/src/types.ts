@@ -1,5 +1,5 @@
 import {
-  FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault,
+  FastifyInstance, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault,
 } from 'fastify';
 
 export interface Prompt {
@@ -26,3 +26,7 @@ export interface Session {
 }
 
 export type MyFastifyInstance = FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>;
+
+export interface ApolloContext {
+  request: FastifyRequest;
+}

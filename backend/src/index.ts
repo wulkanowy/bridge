@@ -9,6 +9,7 @@ import FastifySensible from 'fastify-sensible';
 import FastifySession from 'fastify-session';
 import database from './database/database';
 import registerOAuth from './routes/oauth2';
+import registerWebsiteApi from './routes/website-api';
 import { parseIntStrict, requireEnv } from './utils';
 
 const server = Fastify({
@@ -28,6 +29,7 @@ async function start() {
     },
   });
   await server.register(registerOAuth, { prefix: '/api/oauth', logLevel: 'info' });
+  await server.register(registerWebsiteApi, { prefix: '/api/website', logLevel: 'info' });
 
   await database.connect();
   server.log.info('Connected to database');

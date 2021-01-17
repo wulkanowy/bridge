@@ -1,10 +1,11 @@
 import { nanoid } from 'nanoid';
 import {
+  BaseEntity,
   Column, Entity, ObjectID, ObjectIdColumn,
 } from 'typeorm';
 
 @Entity()
-export default class Application {
+export default class Application extends BaseEntity {
   @ObjectIdColumn()
   public _id!: ObjectID;
 
@@ -22,9 +23,6 @@ export default class Application {
 
   @Column()
   public redirectUris!: string[];
-
-  @Column()
-  public public!: string[];
 
   public static generateClientId(): string {
     return nanoid(12);
