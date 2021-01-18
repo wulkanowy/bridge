@@ -45,8 +45,10 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
       server.log.error(error);
       throw server.httpErrors.internalServerError();
     }
-    const prompt = getSessionData(request.session).prompts.get(request.query.prompt_id);
+    const sessionData = getSessionData(request.session);
+    const prompt = sessionData.prompts.get(request.query.prompt_id);
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');
     await reply.redirect(`${prompt.redirectUri}?error=access_denied&error_description=${encodeURIComponent('User denied')}`);
+    sessionData.prompts.delete(request.query.prompt_id);
   });
 }
