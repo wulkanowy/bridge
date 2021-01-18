@@ -67,47 +67,66 @@
                 </transition>
               </v-badge>
             </div>
-            <div class="pt-16">
-              <h2 class="text-subtitle-1 text--secondary mt-6 mb-2 px-4">
-                Aplikacja
-                <span class="text--primary">{{ promptInfo.application.name }}</span>
-                chce uzyskać dostęp do twojego konta VULCAN UONET+ przez Wulkanowy Bridge
-              </h2>
-              <v-subheader>Uprawnienia aplikacji</v-subheader>
-              <v-list subheader>
-                <v-list-item v-for="item in scopeItems" :key="item.key">
-                  <v-list-item-icon>
-                    <v-icon>{{ item.icon }}</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ item.title }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle v-if="item.subtitle !== undefined">
-                      {{ item.subtitle }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-              <v-alert color="info" text class="mb-2 mx-2">
-                <span class="font-weight-medium">{{ promptInfo.application.name }}</span>
-                nie zobaczy twojego hasła
-                <template #append>
-                  <!-- TODO: Implement -->
-                  <v-btn text color="info">Więcej</v-btn>
-                </template>
-              </v-alert>
-              <v-divider />
-            </div>
-            <v-card-actions>
-              <v-btn color="primary" text outlined :href="denyUrl">
-                Odmów
-              </v-btn>
-              <v-spacer />
-              <v-btn color="primary">
-                Zaloguj się
-              </v-btn>
-            </v-card-actions>
+            <v-window :value="step">
+              <v-window-item :value="1">
+                <div>
+                  <div class="pt-16">
+                    <h2 class="text-subtitle-1 text--secondary mt-6 mb-2 px-4">
+                      Aplikacja
+                      <span class="text--primary">{{ promptInfo.application.name }}</span>
+                      chce uzyskać dostęp do twojego konta VULCAN UONET+ przez Wulkanowy Bridge
+                    </h2>
+                    <v-subheader>Uprawnienia aplikacji</v-subheader>
+                    <v-list subheader>
+                      <v-list-item v-for="item in scopeItems" :key="item.key">
+                        <v-list-item-icon>
+                          <v-icon>{{ item.icon }}</v-icon>
+                        </v-list-item-icon>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            {{ item.title }}
+                          </v-list-item-title>
+                          <v-list-item-subtitle v-if="item.subtitle !== undefined">
+                            {{ item.subtitle }}
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+                    </v-list>
+                    <v-alert color="info" text class="mb-2 mx-2">
+                      <span class="font-weight-medium">{{ promptInfo.application.name }}</span>
+                      nie zobaczy twojego hasła
+                      <template #append>
+                        <!-- TODO: Implement -->
+                        <v-btn text color="info">Więcej</v-btn>
+                      </template>
+                    </v-alert>
+                    <v-divider />
+                  </div>
+                  <v-card-actions>
+                    <v-btn color="primary" text outlined :href="denyUrl">
+                      Odmów
+                    </v-btn>
+                    <v-spacer />
+                    <v-btn color="primary" @click="beginLogin">
+                      Dalej
+                    </v-btn>
+                  </v-card-actions>
+                </div>
+              </v-window-item>
+              <v-window-item :value="2">
+                <div>
+                  <v-card-actions>
+                    <v-btn color="primary" text outlined @click="goBack">
+                      Wróć
+                    </v-btn>
+                    <v-spacer />
+                    <v-btn color="primary">
+                      Zaloguj się
+                    </v-btn>
+                  </v-card-actions>
+                </div>
+              </v-window-item>
+            </v-window>
           </v-card>
         </template>
       </v-sheet>
@@ -144,6 +163,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { GraphQLClient } from 'graphql-request';
+import { getSdk } from '@/graphql/generated';
 
 export enum StudentsMode {
   None = 'none',
@@ -174,36 +195,39 @@ export default class AuthenticatePromptApp extends Vue {
 
   step = 1;
 
-  readonly scopeDescriptions: Record<string, {
+  readonly scopeDescriptions: {
+    key: string;
     title: string;
     subtitle?: string;
     icon: string;
-  }> = {
-    timetable: {
+  }[] = [
+    {
+      key: 'timetable',
       title: 'Plan lekcji',
       icon: 'mdi-timetable',
     },
-    grades: {
+    {
+      key: 'grades',
       title: 'Oceny i punkty',
       subtitle: 'Oceny cząstkowe, końcowe, opisowe oraz punkty',
       icon: 'mdi-numeric-6-box-multiple-outline',
     },
-    notes: {
-      title: 'Uwagi',
+    {
+      key: 'notes',
+      title: 'Uwagi i pochwały',
       icon: 'mdi-note-text-outline',
     },
-    achievements: {
+    {
+      key: 'achievements',
       title: 'Osiągnięcia',
       icon: 'mdi-trophy-outline',
     },
-  }
+  ]
 
   get scopeItems() {
     if (this.promptInfo === null) return undefined;
-    return this.promptInfo.scopes.map((key: string) => ({
-      key,
-      ...this.scopeDescriptions[key],
-    }));
+    return this.scopeDescriptions
+      .filter(({ key }) => this.promptInfo?.scopes?.includes(key) ?? false);
   }
 
   get denyUrl() {
@@ -214,20 +238,20 @@ export default class AuthenticatePromptApp extends Vue {
   async loadPromptInfo() {
     this.promptInfoError = false;
     this.promptInfo = null;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    if (Math.random() < 0.5) {
+
+    if (!this.promptId) return;
+
+    const client = new GraphQLClient('/api/website/graphql');
+    const sdk = getSdk(client);
+
+    try {
+      const { promptInfo } = await sdk.GetPromptInfo({
+        promptId: this.promptId,
+      });
+      this.promptInfo = promptInfo;
+    } catch (error) {
+      console.error(error);
       this.promptInfoError = true;
-    } else {
-      this.promptInfo = {
-        scopes: ['grades', 'timetable', 'notes', 'achievements'],
-        studentsMode: StudentsMode.Many,
-        application: {
-          iconColor: '#f00',
-          iconUrl: null,
-          name: 'Not a fancy app',
-          verified: false,
-        },
-      };
     }
   }
 
@@ -236,6 +260,14 @@ export default class AuthenticatePromptApp extends Vue {
     this.promptId = searchParams.get('prompt_id');
     if (!this.promptId) return;
     await this.loadPromptInfo();
+  }
+
+  goBack() {
+    this.step -= 1;
+  }
+
+  beginLogin() {
+    this.step = 2;
   }
 }
 </script>
