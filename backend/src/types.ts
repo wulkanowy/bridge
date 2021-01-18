@@ -1,7 +1,18 @@
 import type {
   FastifyInstance, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault,
 } from 'fastify';
+import { registerEnumType } from 'type-graphql';
 import type SessionData from './session-data';
+
+export enum StudentsMode {
+  None = 'none',
+  One = 'one',
+  Many = 'many',
+}
+
+registerEnumType(StudentsMode, {
+  name: 'StudentsMode',
+});
 
 export interface Prompt {
   clientId: string;
@@ -12,6 +23,7 @@ export interface Prompt {
     value: string;
     method: 'plain' | 'S256';
   };
+  studentsMode: StudentsMode;
   loginInfo?: {
     host: string;
     username: string;

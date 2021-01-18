@@ -3,7 +3,8 @@ import { nanoid } from 'nanoid';
 import { scopes } from '../../constants';
 import database from '../../database/database';
 import { ParamError, ScopeError } from '../../errors';
-import type { MyFastifyInstance } from '../../types';
+import type { MyFastifyInstance, StudentsMode } from '../../types';
+
 import {
   getSessionData, isObject, parseScopeParam, validateOptionalParam, validateParam,
 } from '../../utils';
@@ -39,21 +40,29 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
     try {
       validateParam('response_type', request.query.response_type);
       if (request.query.response_type === 'code') {
-        const requestedScopes = _.uniq(parseScopeParam('scope', request.query.scope));
-        requestedScopes.forEach((scope) => {
-          if (!scopes.includes(scope)) {
-            throw new ScopeError(`Unknown scope ${scope}`);
-          }
-        });
+        validateParam('students_mode', request.query.students_mode);
         validateOptionalParam('state', request.query.state);
         validateOptionalParam('code_challenge', request.query.code_challenge);
         validateOptionalParam('code_challenge_method', request.query.code_challenge_method);
 
         const codeChallengeMethod = request.query.code_challenge_method ?? 'plain';
         if (codeChallengeMethod !== 'plain' && codeChallengeMethod !== 'S256') {
-          await reply.redirect(`${request.query.redirect_uri}?error=invalid_request&error_description=${encodeURIComponent('code_challenge_method should be either plain or S256')}`);
-          return;
+          throw new ParamError('code_challenge_method should be either "plain" or "S256"');
         }
+
+        if (
+          !['none', 'one', 'many'].includes(request.query.students_mode)
+        ) {
+          throw new ParamError('students_mode should be either "none", "one" or "many"');
+        }
+        const studentsMode = request.query.students_mode as StudentsMode;
+
+        const requestedScopes = _.uniq(parseScopeParam('scope', request.query.scope));
+        requestedScopes.forEach((scope) => {
+          if (!scopes.includes(scope)) {
+            throw new ScopeError(`Unknown scope ${scope}`);
+          }
+        });
 
         const promptId = nanoid(12);
 
@@ -67,6 +76,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
             method: codeChallengeMethod,
             value: request.query.code_challenge,
           },
+          studentsMode,
         });
 
         await reply.redirect(`/authenticate-prompt?prompt_id=${promptId}`);

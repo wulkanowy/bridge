@@ -22,6 +22,7 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
       id: promptId,
       clientId: prompt.clientId,
       scopes: prompt.scopes,
+      studentsMode: prompt.studentsMode,
     };
   }
 
