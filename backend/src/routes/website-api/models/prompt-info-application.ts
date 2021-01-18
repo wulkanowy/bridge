@@ -10,6 +10,9 @@ export default class PromptInfoApplication {
   })
   public iconUrl!: string | null;
 
+  @Field(() => String)
+  public iconColor!: string;
+
   @Field(() => Boolean)
   public verified!: boolean;
 }

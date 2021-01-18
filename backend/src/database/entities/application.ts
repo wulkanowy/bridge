@@ -20,6 +20,9 @@ export default class Application extends BaseEntity {
   public iconUrl!: string | null;
 
   @Column()
+  public iconColor!: string;
+
+  @Column()
   public verified!: boolean;
 
   @Column()

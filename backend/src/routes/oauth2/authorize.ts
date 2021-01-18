@@ -63,6 +63,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
             throw new ScopeError(`Unknown scope ${scope}`);
           }
         });
+        // TODO: Check if user requests student scopes according to students_mode
 
         const promptId = nanoid(12);
 

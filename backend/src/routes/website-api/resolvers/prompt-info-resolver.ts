@@ -37,6 +37,7 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
     return {
       name: application.name,
       iconUrl: application.iconUrl,
+      iconColor: application.iconColor,
       verified: application.verified,
     };
   }
