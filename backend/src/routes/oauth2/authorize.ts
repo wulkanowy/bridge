@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { nanoid } from 'nanoid';
-import { scopes } from '../../constants';
+import urlJoin from 'url-join';
+import { scopes, websitePrefix } from '../../constants';
 import database from '../../database/database';
 import { ParamError, ScopeError } from '../../errors';
 import type { MyFastifyInstance, StudentsMode } from '../../types';
@@ -10,7 +11,7 @@ import {
 } from '../../utils';
 
 export default function registerAuthorize(server: MyFastifyInstance): void {
-  server.post('/authorize', async (
+  server.get('/authorize', async (
     request,
     reply,
   ) => {
@@ -80,7 +81,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
           studentsMode,
         });
 
-        await reply.redirect(`/authenticate-prompt?prompt_id=${promptId}`);
+        await reply.redirect(urlJoin(websitePrefix, `/authenticate-prompt?prompt_id=${promptId}`));
         return;
       }
       await reply.redirect(`${request.query.redirect_uri}?error=unsupported_response_type`);

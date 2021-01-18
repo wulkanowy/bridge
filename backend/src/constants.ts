@@ -4,3 +4,5 @@ export const scopes = [
   'notes',
   'achievements',
 ];
+
+export const websitePrefix = '/';

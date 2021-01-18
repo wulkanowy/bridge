@@ -5,8 +5,10 @@ dotenv.config();
 
 import Fastify from 'fastify';
 import FastifyCookie from 'fastify-cookie';
+import FastifyHttpProxy from 'fastify-http-proxy';
 import FastifySensible from 'fastify-sensible';
 import FastifySession from 'fastify-session';
+import { websitePrefix } from './constants';
 import database from './database/database';
 import registerOAuth from './routes/oauth2';
 import registerWebsiteApi from './routes/website-api';
@@ -28,6 +30,15 @@ async function start() {
       secure: false, // TODO: Remove this line or add development env variable
     },
   });
+
+  const websiteProxyUpstream = process.env.PROXY_WEBSITE;
+  if (websiteProxyUpstream !== undefined) {
+    await server.register(FastifyHttpProxy, {
+      upstream: websiteProxyUpstream,
+      prefix: websitePrefix,
+    });
+  }
+
   await server.register(registerOAuth, { prefix: '/api/oauth', logLevel: 'info' });
   await server.register(registerWebsiteApi, { prefix: '/api/website', logLevel: 'info' });
 

@@ -7,7 +7,10 @@
     </div>
     <v-main class="px-4">
       <v-sheet max-width="500" class="mx-auto mt-16" color="transparent">
-        <v-alert type="error" text v-if="promptInfoError">
+        <v-alert type="error" text v-if="!promptId">
+          Brak wymaganego parametru <code>prompt_id</code>
+        </v-alert>
+        <v-alert type="error" text v-else-if="promptInfoError">
           Nie udało się wczytać danych
           <template #append>
             <v-btn text color="error" @click="loadPromptInfo">
@@ -97,7 +100,7 @@
               <v-divider />
             </div>
             <v-card-actions>
-              <v-btn color="primary" text outlined>
+              <v-btn color="primary" text outlined :href="denyUrl">
                 Odmów
               </v-btn>
               <v-spacer />
@@ -165,6 +168,8 @@ export interface PromptInfo {
 export default class AuthenticatePromptApp extends Vue {
   promptInfo: PromptInfo | null = null;
 
+  promptId: string | null = null;
+
   promptInfoError = false;
 
   step = 1;
@@ -201,6 +206,11 @@ export default class AuthenticatePromptApp extends Vue {
     }));
   }
 
+  get denyUrl() {
+    if (!this.promptId) return undefined;
+    return `/api/website/deny?prompt_id=${this.promptId}`;
+  }
+
   async loadPromptInfo() {
     this.promptInfoError = false;
     this.promptInfo = null;
@@ -222,6 +232,9 @@ export default class AuthenticatePromptApp extends Vue {
   }
 
   async created() {
+    const searchParams = new URLSearchParams(window.location.search);
+    this.promptId = searchParams.get('prompt_id');
+    if (!this.promptId) return;
     await this.loadPromptInfo();
   }
 }
