@@ -29,6 +29,10 @@
     "no-console": "off",
     "max-len": ["off"],
     "import/first": ["off"],
-    "max-classes-per-file": ["off"]
+    "max-classes-per-file": ["off"],
+    "@typescript-eslint/consistent-type-imports": ["error", {
+      "prefer": "type-imports",
+      "disallowTypeAnnotations": true
+    }]
   }
 }

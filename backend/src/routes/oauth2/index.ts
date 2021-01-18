@@ -1,4 +1,4 @@
-import {
+import type {
   MyFastifyInstance,
 } from '../../types';
 import registerAuthorize from './authorize';

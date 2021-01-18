@@ -1,7 +1,8 @@
 import { nanoid } from 'nanoid';
+import type { ObjectID } from 'typeorm';
 import {
   BaseEntity,
-  Column, Entity, ObjectID, ObjectIdColumn,
+  Column, Entity, ObjectIdColumn,
 } from 'typeorm';
 
 @Entity()

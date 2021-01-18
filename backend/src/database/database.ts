@@ -1,4 +1,5 @@
-import { Connection, createConnection, Repository } from 'typeorm';
+import type { Connection, Repository } from 'typeorm';
+import { createConnection } from 'typeorm';
 import Application from './entities/application';
 
 class Database {

@@ -1,6 +1,7 @@
-import {
+import type {
   FastifyInstance, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault,
 } from 'fastify';
+import type SessionData from './session-data';
 
 export interface Prompt {
   clientId: string;
@@ -11,10 +12,12 @@ export interface Prompt {
     value: string;
     method: 'plain' | 'S256';
   };
-}
-
-export interface SessionData {
-  prompts: Map<string, Prompt>
+  loginInfo?: {
+    host: string;
+    username: string;
+    encryptedPassword: string;
+    availableStudentIds: number[];
+  };
 }
 
 export interface Session {

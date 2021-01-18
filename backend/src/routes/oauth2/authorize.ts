@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { scopes } from '../../constants';
 import database from '../../database/database';
 import { ParamError, ScopeError } from '../../errors';
-import { MyFastifyInstance } from '../../types';
+import type { MyFastifyInstance } from '../../types';
 import {
   getSessionData, isObject, parseScopeParam, validateOptionalParam, validateParam,
 } from '../../utils';

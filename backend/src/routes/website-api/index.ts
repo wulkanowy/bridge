@@ -1,14 +1,18 @@
 import { ApolloServer } from 'apollo-server-fastify';
 import { buildSchema } from 'type-graphql';
-import { ApolloContext, MyFastifyInstance } from '../../types';
+import type { ApolloContext, MyFastifyInstance } from '../../types';
 import { getSessionData } from '../../utils';
+import LoginResolver from './resolvers/login-resolver';
 import PromptInfoResolver from './resolvers/prompt-info-resolver';
-import { WebsiteAPIContext } from './types';
+import type { WebsiteAPIContext } from './types';
 
 export default async function registerWebsiteApi(server: MyFastifyInstance): Promise<void> {
   const schema = await buildSchema({
     authMode: 'error',
-    resolvers: [PromptInfoResolver],
+    resolvers: [
+      PromptInfoResolver,
+      LoginResolver,
+    ],
   });
   const apolloServer = new ApolloServer({
     schema,
@@ -19,7 +23,7 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
   });
   await server.register(apolloServer.createHandler({
     cors: {
-      origin: 'https://google.com',
+      origin: false,
     },
   }));
   console.log(apolloServer.graphqlPath);

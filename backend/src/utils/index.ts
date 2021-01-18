@@ -1,11 +1,18 @@
 import _ from 'lodash';
-import { ParamError } from './errors';
-import { Prompt, Session, SessionData } from './types';
+import { ParamError } from '../errors';
+import SessionData from '../session-data';
+import type { Session } from '../types';
+
+export * from './crypto';
 
 export function requireEnv(name: string): string {
   const value = process.env[name];
   if (value === undefined) throw new Error(`Environment variable ${name} not set`);
   return value;
+}
+
+export function requireEnvHex(name: string): Buffer {
+  return Buffer.from(requireEnv(name), 'hex');
 }
 
 export function parseIntStrict(value: string, radix = 10): number {
@@ -47,9 +54,7 @@ export function parseScopeParam(key: string, value: unknown): string[] {
 export function getSessionData(session: Session): SessionData {
   if (session.data === undefined) {
     // eslint-disable-next-line no-param-reassign
-    session.data = {
-      prompts: new Map<string, Prompt>(),
-    };
+    session.data = new SessionData();
   }
   return session.data;
 }
