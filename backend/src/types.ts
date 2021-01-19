@@ -1,5 +1,10 @@
 import type {
-  FastifyInstance, FastifyRequest, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault,
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RawReplyDefaultExpression,
+  RawRequestDefaultExpression,
+  RawServerDefault,
 } from 'fastify';
 import { registerEnumType } from 'type-graphql';
 import type SessionData from './session-data';
@@ -45,4 +50,5 @@ export type MyFastifyInstance = FastifyInstance<RawServerDefault, RawRequestDefa
 
 export interface ApolloContext {
   request: FastifyRequest;
+  reply: FastifyReply,
 }

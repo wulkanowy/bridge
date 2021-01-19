@@ -61,7 +61,6 @@ export type MutationLoginArgs = {
 
 export type LoginResult = {
   __typename?: 'LoginResult';
-  encryptedPrivateKey: Scalars['String'];
   students: Array<LoginResultStudent>;
 };
 
@@ -82,7 +81,6 @@ export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
     { __typename?: 'LoginResult' }
-    & Pick<LoginResult, 'encryptedPrivateKey'>
     & { students: Array<(
       { __typename?: 'LoginResultStudent' }
       & Pick<LoginResultStudent, 'studentId' | 'name'>
@@ -114,7 +112,6 @@ export const LoginDocument = gql`
     username: $username
     promptId: $promptId
   ) {
-    encryptedPrivateKey
     students {
       studentId
       name

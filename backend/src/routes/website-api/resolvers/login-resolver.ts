@@ -21,7 +21,7 @@ export default class LoginResolver {
       @Arg('username') username: string,
       @Arg('password') password: string,
       @Arg('host') host: string,
-      @Ctx() { sessionData }: WebsiteAPIContext,
+      @Ctx() { sessionData, reply }: WebsiteAPIContext,
   ): Promise<LoginResult> {
     const prompt = sessionData.prompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
@@ -55,8 +55,17 @@ export default class LoginResolver {
       username,
       availableStudentIds: students.map(({ studentId }) => studentId),
     };
+    // TODO: Find why the promise never resolves
+    reply.setCookie('epk', encryptedPrivateKey, {
+      sameSite: 'strict',
+      httpOnly: true,
+      path: '/',
+      maxAge: 3600,
+    });
+    // In case execution of setCookie takes some time
+    // TODO: Remove
+    await new Promise((resolve) => setTimeout(resolve, 100));
     return {
-      encryptedPrivateKey,
       students,
     };
   }

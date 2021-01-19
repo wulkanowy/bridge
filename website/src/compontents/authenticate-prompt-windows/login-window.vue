@@ -79,8 +79,8 @@ export default class LoginWindow extends Vue {
         username: this.username,
         password: this.password,
       });
-      const { students, encryptedPrivateKey } = login;
-      console.log(students, encryptedPrivateKey);
+      const { students } = login;
+      console.log(students);
       this.reset();
     } catch (error) {
       console.error(error);
