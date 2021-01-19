@@ -1,3 +1,5 @@
+import { ApolloError } from 'apollo-server-fastify';
+
 export class UnknownPromptError extends Error {
   public name = 'UnknownPromptError';
 
@@ -6,10 +8,10 @@ export class UnknownPromptError extends Error {
   }
 }
 
-export class InvalidCredentialsError extends Error {
-  public name = 'InvalidCredentialsError';
+export class InvalidVulcanCredentialsError extends ApolloError {
+  public name = 'InvalidVulcanCredentialsError';
 
   public constructor() {
-    super('User with provided credentials not found');
+    super('Invalid vulcan credentials', 'INVALID_VULCAN_CREDENTIALS');
   }
 }

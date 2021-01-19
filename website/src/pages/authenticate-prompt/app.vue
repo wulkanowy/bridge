@@ -69,62 +69,13 @@
             </div>
             <v-window :value="step">
               <v-window-item :value="1">
-                <div>
-                  <div class="pt-16">
-                    <h2 class="text-subtitle-1 text--secondary mt-6 mb-2 px-4">
-                      Aplikacja
-                      <span class="text--primary">{{ promptInfo.application.name }}</span>
-                      chce uzyskać dostęp do twojego konta VULCAN UONET+ przez Wulkanowy Bridge
-                    </h2>
-                    <v-subheader>Uprawnienia aplikacji</v-subheader>
-                    <v-list subheader>
-                      <v-list-item v-for="item in scopeItems" :key="item.key">
-                        <v-list-item-icon>
-                          <v-icon>{{ item.icon }}</v-icon>
-                        </v-list-item-icon>
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            {{ item.title }}
-                          </v-list-item-title>
-                          <v-list-item-subtitle v-if="item.subtitle !== undefined">
-                            {{ item.subtitle }}
-                          </v-list-item-subtitle>
-                        </v-list-item-content>
-                      </v-list-item>
-                    </v-list>
-                    <v-alert color="info" text class="mb-2 mx-2">
-                      <span class="font-weight-medium">{{ promptInfo.application.name }}</span>
-                      nie zobaczy twojego hasła
-                      <template #append>
-                        <!-- TODO: Implement -->
-                        <v-btn text color="info">Więcej</v-btn>
-                      </template>
-                    </v-alert>
-                    <v-divider />
-                  </div>
-                  <v-card-actions>
-                    <v-btn color="primary" text outlined :href="denyUrl">
-                      Odmów
-                    </v-btn>
-                    <v-spacer />
-                    <v-btn color="primary" @click="beginLogin">
-                      Dalej
-                    </v-btn>
-                  </v-card-actions>
-                </div>
+                <overview-window
+                  @next="overviewNext"
+                  :promptInfo="promptInfo"
+                />
               </v-window-item>
-              <v-window-item :value="2">
-                <div>
-                  <v-card-actions>
-                    <v-btn color="primary" text outlined @click="goBack">
-                      Wróć
-                    </v-btn>
-                    <v-spacer />
-                    <v-btn color="primary">
-                      Zaloguj się
-                    </v-btn>
-                  </v-card-actions>
-                </div>
+              <v-window-item :value="2" eager>
+                <login-window @back="loginBack" ref="loginWindow" :prompt-info="promptInfo" />
               </v-window-item>
             </v-window>
           </v-card>
@@ -162,31 +113,19 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { GraphQLClient } from 'graphql-request';
-import { getSdk } from '@/graphql/generated';
-
-export enum StudentsMode {
-  None = 'none',
-  One = 'one',
-  Many = 'many',
-}
-
-export interface PromptInfo {
-  scopes: string[];
-  studentsMode: StudentsMode;
-  application: {
-    name: string;
-    iconUrl: string | null;
-    iconColor: string;
-    verified: boolean;
-  };
-}
+import { Component, Ref, Vue } from 'vue-property-decorator';
+import OverviewWindow from '@/compontents/authenticate-prompt-windows/overview-window.vue';
+import { PromptInfo } from '@/types';
+import LoginWindow from '@/compontents/authenticate-prompt-windows/login-window.vue';
+import { sdk } from '@/pages/authenticate-prompt/sdk';
 
 @Component({
   name: 'AuthenticatePromptApp',
+  components: { LoginWindow, OverviewWindow },
 })
 export default class AuthenticatePromptApp extends Vue {
+  @Ref() readonly loginWindow!: LoginWindow
+
   promptInfo: PromptInfo | null = null;
 
   promptId: string | null = null;
@@ -195,54 +134,11 @@ export default class AuthenticatePromptApp extends Vue {
 
   step = 1;
 
-  readonly scopeDescriptions: {
-    key: string;
-    title: string;
-    subtitle?: string;
-    icon: string;
-  }[] = [
-    {
-      key: 'timetable',
-      title: 'Plan lekcji',
-      icon: 'mdi-timetable',
-    },
-    {
-      key: 'grades',
-      title: 'Oceny i punkty',
-      subtitle: 'Oceny cząstkowe, końcowe, opisowe oraz punkty',
-      icon: 'mdi-numeric-6-box-multiple-outline',
-    },
-    {
-      key: 'notes',
-      title: 'Uwagi i pochwały',
-      icon: 'mdi-note-text-outline',
-    },
-    {
-      key: 'achievements',
-      title: 'Osiągnięcia',
-      icon: 'mdi-trophy-outline',
-    },
-  ]
-
-  get scopeItems() {
-    if (this.promptInfo === null) return undefined;
-    return this.scopeDescriptions
-      .filter(({ key }) => this.promptInfo?.scopes?.includes(key) ?? false);
-  }
-
-  get denyUrl() {
-    if (!this.promptId) return undefined;
-    return `/api/website/deny?prompt_id=${this.promptId}`;
-  }
-
   async loadPromptInfo() {
     this.promptInfoError = false;
     this.promptInfo = null;
 
     if (!this.promptId) return;
-
-    const client = new GraphQLClient('/api/website/graphql');
-    const sdk = getSdk(client);
 
     try {
       const { promptInfo } = await sdk.GetPromptInfo({
@@ -262,12 +158,13 @@ export default class AuthenticatePromptApp extends Vue {
     await this.loadPromptInfo();
   }
 
-  goBack() {
-    this.step -= 1;
+  loginBack() {
+    this.step = 1;
   }
 
-  beginLogin() {
+  overviewNext() {
     this.step = 2;
+    this.loginWindow.reset();
   }
 }
 </script>

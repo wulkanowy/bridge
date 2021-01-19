@@ -2,6 +2,7 @@ import gql from 'graphql-tag';
 
 export default gql`query GetPromptInfo($promptId: String!) {
   promptInfo(promptId: $promptId) {
+    id
     scopes
     studentsMode
     application {
@@ -11,4 +12,5 @@ export default gql`query GetPromptInfo($promptId: String!) {
       verified
     }
   }
-}`;
+}
+`;

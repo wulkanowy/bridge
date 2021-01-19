@@ -71,6 +71,25 @@ export type LoginResultStudent = {
   name: Scalars['String'];
 };
 
+export type LoginMutationVariables = Exact<{
+  promptId: Scalars['String'];
+  host: Scalars['String'];
+  username: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+export type LoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'encryptedPrivateKey'>
+    & { students: Array<(
+      { __typename?: 'LoginResultStudent' }
+      & Pick<LoginResultStudent, 'studentId' | 'name'>
+    )>; }
+  ); }
+);
+
 export type GetPromptInfoQueryVariables = Exact<{
   promptId: Scalars['String'];
 }>;
@@ -79,7 +98,7 @@ export type GetPromptInfoQuery = (
   { __typename?: 'Query' }
   & { promptInfo: (
     { __typename?: 'PromptInfo' }
-    & Pick<PromptInfo, 'scopes' | 'studentsMode'>
+    & Pick<PromptInfo, 'id' | 'scopes' | 'studentsMode'>
     & { application: (
       { __typename?: 'PromptInfoApplication' }
       & Pick<PromptInfoApplication, 'name' | 'iconUrl' | 'iconColor' | 'verified'>
@@ -87,9 +106,26 @@ export type GetPromptInfoQuery = (
   ); }
 );
 
+export const LoginDocument = gql`
+    mutation Login($promptId: String!, $host: String!, $username: String!, $password: String!) {
+  login(
+    host: $host
+    password: $password
+    username: $username
+    promptId: $promptId
+  ) {
+    encryptedPrivateKey
+    students {
+      studentId
+      name
+    }
+  }
+}
+    `;
 export const GetPromptInfoDocument = gql`
     query GetPromptInfo($promptId: String!) {
   promptInfo(promptId: $promptId) {
+    id
     scopes
     studentsMode
     application {
@@ -107,6 +143,9 @@ export type SdkFunctionWrapper = <T>(action: () => Promise<T>) => Promise<T>;
 const defaultWrapper: SdkFunctionWrapper = (sdkFunction) => sdkFunction();
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
+    Login(variables: LoginMutationVariables, requestHeaders?: Headers): Promise<LoginMutation> {
+      return withWrapper(() => client.request<LoginMutation>(print(LoginDocument), variables, requestHeaders));
+    },
     GetPromptInfo(variables: GetPromptInfoQueryVariables, requestHeaders?: Headers): Promise<GetPromptInfoQuery> {
       return withWrapper(() => client.request<GetPromptInfoQuery>(print(GetPromptInfoDocument), variables, requestHeaders));
     },

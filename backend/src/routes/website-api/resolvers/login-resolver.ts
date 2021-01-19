@@ -6,9 +6,9 @@ import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
 import {
-  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, requireEnvHex,
+  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, requireEnvHex,
 } from '../../../utils';
-import { UnknownPromptError } from '../errors';
+import { InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
 import LoginResult from '../models/login-result';
 import type LoginResultStudent from '../models/login-result-student';
 import type { WebsiteAPIContext } from '../types';
@@ -29,7 +29,12 @@ export default class LoginResolver {
       username,
       password,
     }));
-    await client.login();
+    try {
+      await client.login();
+    } catch (error) {
+      if (isObject(error) && error.name === 'InvalidCredentialsError') throw new InvalidVulcanCredentialsError();
+      throw error;
+    }
     const diaryList = await client.getDiaryList();
     const { privateKey, publicKey } = await generatePrivatePublicPair();
     const encryptedPrivateKey = encryptSymmetrical(
