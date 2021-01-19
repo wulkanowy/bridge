@@ -11,8 +11,8 @@ export function requireEnv(name: string): string {
   return value;
 }
 
-export function requireEnvHex(name: string): Buffer {
-  return Buffer.from(requireEnv(name), 'hex');
+export function requireEnvBase64(name: string): Buffer {
+  return Buffer.from(requireEnv(name), 'base64');
 }
 
 export function parseIntStrict(value: string, radix = 10): number {

@@ -7,6 +7,7 @@ import { ParamError, ScopeError } from '../../errors';
 import type { MyFastifyInstance, StudentsMode } from '../../types';
 
 import {
+  createKey,
   getSessionData, isObject, parseScopeParam, validateOptionalParam, validateParam,
 } from '../../utils';
 
@@ -79,6 +80,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
             value: request.query.code_challenge,
           },
           studentsMode,
+          promptSecret: createKey(),
         });
 
         await reply.redirect(urlJoin(websitePrefix, `/authenticate-prompt?prompt_id=${promptId}`));

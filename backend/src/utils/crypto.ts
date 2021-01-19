@@ -18,6 +18,10 @@ export function generatePrivatePublicPair(): Promise<{
   });
 }
 
+export function createKey(): Buffer {
+  return crypto.randomBytes(32);
+}
+
 export function encryptSymmetrical(value: string, key: Buffer): string {
   const ivBuffer = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-cbc', key, ivBuffer);

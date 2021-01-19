@@ -6,7 +6,7 @@ import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
 import {
-  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, requireEnvHex,
+  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject,
 } from '../../../utils';
 import { InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
 import LoginResult from '../models/login-result';
@@ -39,7 +39,7 @@ export default class LoginResolver {
     const { privateKey, publicKey } = await generatePrivatePublicPair();
     const encryptedPrivateKey = encryptSymmetrical(
       privateKey,
-      requireEnvHex('CREDENTIALS_PRIVATE_KEY_ENCRYPT_KEY'),
+      prompt.promptSecret,
     );
     const encryptedPassword = encryptWithPublicKey(password, publicKey);
     console.log(diaryList.map((e) => e.serialized.info));

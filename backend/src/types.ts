@@ -24,6 +24,7 @@ export interface Prompt {
     method: 'plain' | 'S256';
   };
   studentsMode: StudentsMode;
+  promptSecret: Buffer;
   loginInfo?: {
     host: string;
     username: string;
