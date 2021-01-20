@@ -122,6 +122,10 @@
     .scale-enter, .scale-leave-to {
       transform: scale(0);
     }
+
+    .v-card__text, .v-card__title {
+      word-break: normal;
+    }
   }
 </style>
 

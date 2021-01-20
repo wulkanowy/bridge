@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-form @submit.prevent="submit" v-model="formValid" ref="form">
-      <v-card-title class="d-block">Zaloguj się do konta VULCAN UONET+</v-card-title>
+      <v-card-title>Zaloguj się do konta VULCAN UONET+</v-card-title>
       <div class="mx-4">
         <v-select v-model="host" label="Odmiana dziennika" :items="hosts" outlined />
         <v-text-field
