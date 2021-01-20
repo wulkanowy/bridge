@@ -23,7 +23,7 @@
         </div>
         <template v-else>
           <div class="pb-1 text--secondary">
-            Krok <span class="primary--text">{{ step }}/5</span>
+            Krok <span class="primary--text">{{ step }}/3</span>
           </div>
           <v-card outlined>
             <div class="d-flex justify-center mn-16 avatar__wrapper">
@@ -70,12 +70,25 @@
             <v-window :value="step">
               <v-window-item :value="1">
                 <overview-window
-                  @next="overviewNext"
                   :promptInfo="promptInfo"
+                  @next="toLoginWindow"
                 />
               </v-window-item>
               <v-window-item :value="2" eager>
-                <login-window @back="loginBack" ref="loginWindow" :prompt-info="promptInfo" />
+                <login-window
+                  ref="loginWindow"
+                  :prompt-info="promptInfo"
+                  @login="login"
+                  @back="loginBack"
+                />
+              </v-window-item>
+              <v-window-item :value="3">
+                <students-window
+                  v-if="students !== null"
+                  :prompt-info="promptInfo"
+                  :students="students"
+                  @back="toLoginWindow"
+                />
               </v-window-item>
             </v-window>
           </v-card>
@@ -115,13 +128,14 @@
 <script lang="ts">
 import { Component, Ref, Vue } from 'vue-property-decorator';
 import OverviewWindow from '@/compontents/authenticate-prompt-windows/overview-window.vue';
-import { PromptInfo } from '@/types';
+import { PromptInfo, Student } from '@/types';
 import LoginWindow from '@/compontents/authenticate-prompt-windows/login-window.vue';
+import StudentsWindow from '@/compontents/authenticate-prompt-windows/students-window.vue';
 import { sdk } from '@/pages/authenticate-prompt/sdk';
 
 @Component({
   name: 'AuthenticatePromptApp',
-  components: { LoginWindow, OverviewWindow },
+  components: { LoginWindow, OverviewWindow, StudentsWindow },
 })
 export default class AuthenticatePromptApp extends Vue {
   @Ref() readonly loginWindow!: LoginWindow
@@ -131,6 +145,8 @@ export default class AuthenticatePromptApp extends Vue {
   promptId: string | null = null;
 
   promptInfoError = false;
+
+  students: Student[] | null = null;
 
   step = 1;
 
@@ -158,13 +174,19 @@ export default class AuthenticatePromptApp extends Vue {
     await this.loadPromptInfo();
   }
 
+  toLoginWindow() {
+    this.step = 2;
+    this.loginWindow.reset();
+    this.students = null;
+  }
+
   loginBack() {
     this.step = 1;
   }
 
-  overviewNext() {
-    this.step = 2;
-    this.loginWindow.reset();
+  login({ students }: { students: Student[] }) {
+    this.students = students;
+    this.step = 3;
   }
 }
 </script>

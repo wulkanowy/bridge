@@ -45,6 +45,12 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
       server.log.error(error);
       throw server.httpErrors.internalServerError();
     }
+    // TODO: Find why the promise never resolves
+    reply.clearCookie(`epk-${request.query.prompt_id}`);
+    // In case execution of setCookie takes some time
+    // TODO: Remove
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const sessionData = getSessionData(request.session);
     const prompt = sessionData.prompts.get(request.query.prompt_id);
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');

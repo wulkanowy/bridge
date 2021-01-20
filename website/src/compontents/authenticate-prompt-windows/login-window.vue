@@ -1,11 +1,22 @@
 <template>
   <div>
-    <v-form @submit.prevent="submit">
+    <v-form @submit.prevent="submit" v-model="formValid" ref="form">
       <v-card-title class="d-block">Zaloguj się do konta VULCAN UONET+</v-card-title>
       <div class="mx-4">
         <v-select v-model="host" label="Odmiana dziennika" :items="hosts" outlined />
-        <v-text-field v-model="username" label="Nazwa użytkownika" outlined />
-        <v-text-field v-model="password" type="password" label="Hasło" outlined />
+        <v-text-field
+          v-model="username"
+          label="Nazwa użytkownika"
+          outlined
+          :rules="requiredRules"
+        />
+        <v-text-field
+          v-model="password"
+          type="password"
+          label="Hasło"
+          outlined
+          :rules="requiredRules"
+        />
       </div>
       <v-alert type="error" class="mx-2" :value="error === 'invalid-credentials'">
         Dane logowania są nieprawidłowe
@@ -18,7 +29,7 @@
           Wróć
         </v-btn>
         <v-spacer />
-        <v-btn color="primary" :loading="loading" type="submit">
+        <v-btn color="primary" :loading="loading" type="submit" :disabled="!formValid">
           Zaloguj się
         </v-btn>
       </v-card-actions>
@@ -27,9 +38,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import {
+  Component, Prop, Ref, Vue,
+} from 'vue-property-decorator';
 import { PromptInfo } from '@/types';
 import { hasErrorCode, sdk } from '@/pages/authenticate-prompt/sdk';
+import { InputValidationRules } from 'vuetify';
+
+interface VForm extends HTMLFormElement {
+  validate(): boolean;
+  resetValidation(): void;
+}
 
 @Component({
   name: 'LoginWindow',
@@ -41,6 +60,8 @@ export default class LoginWindow extends Vue {
   })
   promptInfo!: PromptInfo;
 
+  @Ref('form') form!: VForm;
+
   readonly hosts = [
     {
       text: 'Vulcan',
@@ -51,6 +72,12 @@ export default class LoginWindow extends Vue {
       value: 'fakelog.cf',
     },
   ]
+
+  readonly requiredRules: InputValidationRules = [
+    (v) => v !== '' || 'To pole jest wymagane',
+  ]
+
+  formValid = false;
 
   host = '';
 
@@ -66,10 +93,11 @@ export default class LoginWindow extends Vue {
     this.host = 'fakelog.cf';
     this.username = '';
     this.password = '';
+    this.form.resetValidation();
   }
 
   async submit() {
-    if (this.loading) return;
+    if (this.loading || !this.formValid) return;
     this.error = null;
     this.loading = true;
     try {
@@ -80,7 +108,7 @@ export default class LoginWindow extends Vue {
         password: this.password,
       });
       const { students } = login;
-      console.log(students);
+      this.$emit('login', { students });
       this.reset();
     } catch (error) {
       console.error(error);
@@ -94,7 +122,7 @@ export default class LoginWindow extends Vue {
     this.$emit('back');
   }
 
-  created() {
+  mounted() {
     this.reset();
   }
 }

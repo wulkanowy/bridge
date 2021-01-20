@@ -56,7 +56,7 @@ export default class LoginResolver {
       availableStudentIds: students.map(({ studentId }) => studentId),
     };
     // TODO: Find why the promise never resolves
-    reply.setCookie('epk', encryptedPrivateKey, {
+    reply.setCookie(`epk-${promptId}`, encryptedPrivateKey, {
       sameSite: 'strict',
       httpOnly: true,
       path: '/',

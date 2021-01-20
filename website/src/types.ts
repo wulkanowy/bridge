@@ -1,7 +1,7 @@
 export enum StudentsMode {
-  None = 'none',
-  One = 'one',
-  Many = 'many',
+  None = 'None',
+  One = 'One',
+  Many = 'Many',
 }
 
 export interface PromptInfo {
@@ -14,4 +14,9 @@ export interface PromptInfo {
     iconColor: string;
     verified: boolean;
   };
+}
+
+export interface Student {
+  studentId: string;
+  name: string;
 }
