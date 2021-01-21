@@ -26,6 +26,7 @@
     "fastify-http-proxy": "^4.2.0",
     "fastify-sensible": "^3.1.0",
     "fastify-session": "^5.2.1",
+    "got": "^11.8.1",
     "lodash": "^4.17.20",
     "mongodb": "^3.6.3",
     "nanoid": "^3.1.20",

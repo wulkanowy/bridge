@@ -17,19 +17,31 @@
           outlined
           :rules="requiredRules"
         />
+        <div class="overflow-x-auto">
+          <vue-recaptcha
+            ref="recaptcha"
+            class="d-inline-block"
+            :sitekey="captchaSiteKey"
+            @verify="captchaVerify"
+            @expired="captchaReset()"
+            @error="captchaReset()"
+          />
+        </div>
       </div>
-      <v-alert type="error" class="mx-2" :value="error === 'invalid-credentials'">
-        Dane logowania są nieprawidłowe
-      </v-alert>
-      <v-alert type="error" class="mx-2" :value="error === 'other'">
-        Podczas logowania wystąpił błąd
+      <v-alert type="error" class="mx-2" :value="errorMessage !== null">
+        {{ errorMessage }}
       </v-alert>
       <v-card-actions>
         <v-btn color="primary" text outlined @click="back" :disabled="loading">
           Wróć
         </v-btn>
         <v-spacer />
-        <v-btn color="primary" :loading="loading" type="submit" :disabled="!formValid">
+        <v-btn
+          color="primary"
+          :loading="loading"
+          type="submit"
+          :disabled="!formValid || !this.captchaResponse"
+        >
           Zaloguj się
         </v-btn>
       </v-card-actions>
@@ -44,6 +56,8 @@ import {
 import { PromptInfo } from '@/types';
 import { hasErrorCode, sdk } from '@/pages/authenticate-prompt/sdk';
 import { InputValidationRules } from 'vuetify';
+import VueRecaptcha from 'vue-recaptcha';
+import { requireEnv } from '@/utils';
 
 interface VForm extends HTMLFormElement {
   validate(): boolean;
@@ -52,6 +66,9 @@ interface VForm extends HTMLFormElement {
 
 @Component({
   name: 'LoginWindow',
+  components: {
+    VueRecaptcha,
+  },
 })
 export default class LoginWindow extends Vue {
   @Prop({
@@ -61,6 +78,10 @@ export default class LoginWindow extends Vue {
   promptInfo!: PromptInfo;
 
   @Ref('form') form!: VForm;
+
+  @Ref('recaptcha') recaptcha!: VueRecaptcha;
+
+  readonly captchaSiteKey = requireEnv('VUE_APP_CAPTCHA_SITE_KEY');
 
   readonly hosts = [
     {
@@ -85,19 +106,30 @@ export default class LoginWindow extends Vue {
 
   password = '';
 
+  captchaResponse: string | null = null;
+
   loading = false;
 
-  error: 'invalid-credentials' | 'other' | null = null;
+  error: 'invalid-credentials' | 'other' | 'captcha' | null = null;
 
   reset() {
     this.host = 'fakelog.cf';
     this.username = '';
     this.password = '';
     this.form.resetValidation();
+    this.recaptcha.reset();
+  }
+
+  captchaVerify(response: string) {
+    this.captchaResponse = response;
+  }
+
+  captchaReset() {
+    this.captchaResponse = null;
   }
 
   async submit() {
-    if (this.loading || !this.formValid) return;
+    if (this.loading || !this.formValid || !this.captchaResponse) return;
     this.error = null;
     this.loading = true;
     try {
@@ -106,13 +138,16 @@ export default class LoginWindow extends Vue {
         host: this.host,
         username: this.username,
         password: this.password,
+        captchaResponse: this.captchaResponse,
       });
       const { students } = login;
       this.$emit('login', { students });
       this.reset();
     } catch (error) {
       console.error(error);
-      this.error = hasErrorCode(error, 'INVALID_VULCAN_CREDENTIALS') ? 'invalid-credentials' : 'other';
+      if (hasErrorCode(error, 'INVALID_VULCAN_CREDENTIALS')) this.error = 'invalid-credentials';
+      if (hasErrorCode(error, 'CAPTCHA_ERROR')) this.error = 'captcha';
+      else this.error = 'other';
     }
     this.loading = false;
   }
@@ -124,6 +159,13 @@ export default class LoginWindow extends Vue {
 
   mounted() {
     this.reset();
+  }
+
+  get errorMessage() {
+    if (this.error === null) return null;
+    if (this.error === 'invalid-credentials') return 'Dane logowania są nieprawidłowe';
+    if (this.error === 'captcha') return 'Błąd weryfikacji';
+    return 'Podczas logowania wystąpił błąd';
   }
 }
 </script>

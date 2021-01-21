@@ -6,9 +6,9 @@ import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
 import {
-  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject,
+  encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, verifyCaptchaResponse,
 } from '../../../utils';
-import { InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
+import { CaptchaError, InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
 import LoginResult from '../models/login-result';
 import type LoginResultStudent from '../models/login-result-student';
 import type { WebsiteAPIContext } from '../types';
@@ -21,10 +21,12 @@ export default class LoginResolver {
       @Arg('username') username: string,
       @Arg('password') password: string,
       @Arg('host') host: string,
+      @Arg('captchaResponse') captchaResponse: string,
       @Ctx() { sessionData, reply }: WebsiteAPIContext,
   ): Promise<LoginResult> {
     const prompt = sessionData.prompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
+    if (!await verifyCaptchaResponse(captchaResponse)) throw new CaptchaError();
     const client = new Client(host, () => ({
       username,
       password,

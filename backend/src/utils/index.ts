@@ -1,3 +1,4 @@
+import got from 'got';
 import _ from 'lodash';
 import { ParamError } from '../errors';
 import SessionData from '../session-data';
@@ -57,4 +58,21 @@ export function getSessionData(session: Session): SessionData {
     session.data = new SessionData();
   }
   return session.data;
+}
+
+export async function verifyCaptchaResponse(response: string): Promise<boolean> {
+  const { body } = await got.post<{
+    success: boolean,
+    challenge_ts?: string;
+    hostname?: string;
+    'error-codes'?: string[]
+  }>('https://www.google.com/recaptcha/api/siteverify', {
+    responseType: 'json',
+    searchParams: {
+      secret: requireEnv('CAPTCHA_SECRET'),
+      response,
+    },
+  });
+  console.log(body);
+  return body.success;
 }

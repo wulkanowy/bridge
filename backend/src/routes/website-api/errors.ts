@@ -1,10 +1,18 @@
 import { ApolloError } from 'apollo-server-fastify';
 
-export class UnknownPromptError extends Error {
+export class CaptchaError extends ApolloError {
+  public name = 'CaptchaError';
+
+  public constructor() {
+    super('Captcha validation failed', 'CAPTCHA_ERROR');
+  }
+}
+
+export class UnknownPromptError extends ApolloError {
   public name = 'UnknownPromptError';
 
   public constructor() {
-    super('Unknown prompt');
+    super('Unknown prompt', 'UNKNOWN_PROMPT_ERROR');
   }
 }
 

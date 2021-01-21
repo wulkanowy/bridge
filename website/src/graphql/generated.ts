@@ -53,6 +53,7 @@ export type Mutation = {
 };
 
 export type MutationLoginArgs = {
+  captchaResponse: Scalars['String'];
   host: Scalars['String'];
   password: Scalars['String'];
   username: Scalars['String'];
@@ -75,6 +76,7 @@ export type LoginMutationVariables = Exact<{
   host: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
+  captchaResponse: Scalars['String'];
 }>;
 
 export type LoginMutation = (
@@ -105,12 +107,13 @@ export type GetPromptInfoQuery = (
 );
 
 export const LoginDocument = gql`
-    mutation Login($promptId: String!, $host: String!, $username: String!, $password: String!) {
+    mutation Login($promptId: String!, $host: String!, $username: String!, $password: String!, $captchaResponse: String!) {
   login(
     host: $host
     password: $password
     username: $username
     promptId: $promptId
+    captchaResponse: $captchaResponse
   ) {
     students {
       studentId
