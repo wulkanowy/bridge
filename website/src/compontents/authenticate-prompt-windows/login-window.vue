@@ -118,6 +118,7 @@ export default class LoginWindow extends Vue {
     this.password = '';
     this.form.resetValidation();
     this.recaptcha.reset();
+    this.captchaResponse = null;
   }
 
   captchaVerify(response: string) {
