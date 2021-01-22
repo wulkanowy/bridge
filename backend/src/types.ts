@@ -1,3 +1,5 @@
+import type { SerializedClient } from '@wulkanowy/sdk/dist/diary/interfaces/serialized-client';
+import type { SerializedDiary } from '@wulkanowy/sdk/dist/diary/interfaces/serialized-diary';
 import type {
   FastifyInstance,
   FastifyReply,
@@ -34,6 +36,8 @@ export interface Prompt {
     host: string;
     username: string;
     encryptedPassword: string;
+    encryptedSDK: string;
+    publicKey: string;
     availableStudentIds: number[];
   };
 }
@@ -44,6 +48,11 @@ export interface Session {
   touch(): void;
   regenerate(): void;
   data?: SessionData;
+}
+
+export interface SerializedSDK {
+  client: SerializedClient;
+  diaries: SerializedDiary[];
 }
 
 export type MyFastifyInstance = FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>>;

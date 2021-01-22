@@ -1,8 +1,10 @@
+import wulkanowy from '@wulkanowy/sdk';
+import type { GetCredentialsFunction } from '@wulkanowy/sdk/dist/client/types';
 import got from 'got';
 import _ from 'lodash';
 import { ParamError } from '../errors';
 import SessionData from '../session-data';
-import type { Session } from '../types';
+import type { SerializedSDK, Session } from '../types';
 
 export * from './crypto';
 
@@ -75,4 +77,24 @@ export async function verifyCaptchaResponse(response: string): Promise<boolean> 
   });
   console.log(body);
   return body.success;
+}
+
+export function sdkToJSON(client: wulkanowy.Client, diaries: wulkanowy.Diary[]): string {
+  const serialized: SerializedSDK = {
+    client: client.serialize(),
+    diaries: diaries.map((diary) => diary.serialize()),
+  };
+  return JSON.stringify(serialized);
+}
+
+export function sdkFromJSON(json: string, getCredentials: GetCredentialsFunction): {
+  client: wulkanowy.Client,
+  diaries: wulkanowy.Diary[]
+} {
+  const serialized = JSON.parse(json) as SerializedSDK;
+  const client = wulkanowy.Client.deserialize(serialized.client, getCredentials);
+  return {
+    client,
+    diaries: serialized.diaries.map((serializedDiary) => new wulkanowy.Diary(client, serializedDiary)),
+  };
 }

@@ -5,6 +5,7 @@ import _ from 'lodash';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
+import type { SerializedSDK } from '../../../types';
 import {
   encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, verifyCaptchaResponse,
 } from '../../../utils';
@@ -44,15 +45,22 @@ export default class LoginResolver {
       prompt.promptSecret,
     );
     const encryptedPassword = encryptWithPublicKey(password, publicKey);
-    console.log(diaryList.map((e) => e.serialized.info));
-    const students = _.toPairs(_.groupBy(diaryList.map((e) => e.serialized.info), 'studentId'))
+    const diaryStudents = _.groupBy(diaryList.map((e) => e.serialized.info), 'studentId');
+    const students = _.toPairs(diaryStudents)
       .map(([, diaryInfoList]: [string, DiaryInfo[]]) => diaryInfoList[0])
       .map<LoginResultStudent>((diaryInfo) => ({
       name: `${diaryInfo.studentFirstName} ${diaryInfo.studentSurname}`,
       studentId: diaryInfo.studentId,
     }));
+    const serializedSDK: SerializedSDK = {
+      client: client.serialize(),
+      diaries: diaryList.map(({ serialized }) => serialized),
+    };
+    const encryptedSDK = encryptWithPublicKey(JSON.stringify(serializedSDK), publicKey);
     prompt.loginInfo = {
       encryptedPassword,
+      encryptedSDK,
+      publicKey,
       host,
       username,
       availableStudentIds: students.map(({ studentId }) => studentId),
