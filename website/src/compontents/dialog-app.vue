@@ -31,5 +31,9 @@ export default class DialogApp extends Vue {
     .v-card__text, .v-card__title {
       word-break: normal;
     }
+
+    .no-basis {
+      flex-basis: 0;
+    }
   }
 </style>

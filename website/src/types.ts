@@ -13,6 +13,12 @@ export interface PromptInfo {
     iconUrl: string | null;
     iconColor: string;
     verified: boolean;
+    homepage: string | null;
+    owner: {
+      login: string;
+      name: string | null;
+      url: string;
+    };
   };
 }
 

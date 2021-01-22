@@ -10,6 +10,12 @@ export default gql`query GetPromptInfo($promptId: String!) {
       iconUrl
       iconColor
       verified
+      homepage
+      owner {
+        login
+        name
+        url
+      }
     }
   }
 }

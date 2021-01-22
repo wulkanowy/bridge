@@ -4,6 +4,7 @@ import {
   Arg, Ctx, FieldResolver, Query, Resolver, Root,
 } from 'type-graphql';
 import database from '../../../database/database';
+import { getUser } from '../../../graphql/github/sdk';
 import { UnknownPromptError } from '../errors';
 import PromptInfo from '../models/prompt-info';
 import type PromptInfoApplication from '../models/prompt-info-application';
@@ -39,6 +40,8 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
       iconUrl: application.iconUrl,
       iconColor: application.iconColor,
       verified: application.verified,
+      homepage: application.homepage,
+      owner: await getUser(application.ownerGitHubLogin),
     };
   }
 }

@@ -45,6 +45,15 @@ export type PromptInfoApplication = {
   iconUrl: Maybe<Scalars['String']>;
   iconColor: Scalars['String'];
   verified: Scalars['Boolean'];
+  owner: GitHubUser;
+  homepage: Maybe<Scalars['String']>;
+};
+
+export type GitHubUser = {
+  __typename?: 'GitHubUser';
+  login: Scalars['String'];
+  name: Maybe<Scalars['String']>;
+  url: Scalars['String'];
 };
 
 export type Mutation = {
@@ -101,7 +110,11 @@ export type GetPromptInfoQuery = (
     & Pick<PromptInfo, 'id' | 'scopes' | 'studentsMode'>
     & { application: (
       { __typename?: 'PromptInfoApplication' }
-      & Pick<PromptInfoApplication, 'name' | 'iconUrl' | 'iconColor' | 'verified'>
+      & Pick<PromptInfoApplication, 'name' | 'iconUrl' | 'iconColor' | 'verified' | 'homepage'>
+      & { owner: (
+        { __typename?: 'GitHubUser' }
+        & Pick<GitHubUser, 'login' | 'name' | 'url'>
+      ); }
     ); }
   ); }
 );
@@ -133,6 +146,12 @@ export const GetPromptInfoDocument = gql`
       iconUrl
       iconColor
       verified
+      homepage
+      owner {
+        login
+        name
+        url
+      }
     }
   }
 }

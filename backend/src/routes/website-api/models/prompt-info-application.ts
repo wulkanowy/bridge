@@ -1,4 +1,5 @@
 import { Field, ObjectType } from 'type-graphql';
+import GitHubUser from './github-user';
 
 @ObjectType()
 export default class PromptInfoApplication {
@@ -15,4 +16,12 @@ export default class PromptInfoApplication {
 
   @Field(() => Boolean)
   public verified!: boolean;
+
+  @Field(() => GitHubUser)
+  public owner!: GitHubUser;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  public homepage!: string | null;
 }

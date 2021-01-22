@@ -3,7 +3,7 @@
     <div class="pt-16">
       <h2 class="text-subtitle-1 text--secondary mt-6 mb-2 px-4">
         Aplikacja
-        <span class="text--primary">{{ promptInfo.application.name }}</span>
+        <app-info-dialog :prompt-info="promptInfo" />
         chce uzyskać dostęp do twojego konta VULCAN UONET+ przez Wulkanowy Bridge
       </h2>
       <v-subheader>Uprawnienia aplikacji</v-subheader>
@@ -46,9 +46,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { PromptInfo } from '@/types';
+import AppInfoDialog from '@/compontents/authenticate-prompt-windows/app-info-dialog.vue';
 
 @Component({
   name: 'OverviewWindow',
+  components: { AppInfoDialog },
 })
 export default class OverviewWindow extends Vue {
   @Prop({

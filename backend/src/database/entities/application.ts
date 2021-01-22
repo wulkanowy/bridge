@@ -28,6 +28,12 @@ export default class Application extends BaseEntity {
   @Column()
   public redirectUris!: string[];
 
+  @Column()
+  public ownerGitHubLogin!: string;
+
+  @Column()
+  public homepage!: string | null;
+
   public static generateClientId(): string {
     return nanoid(12);
   }

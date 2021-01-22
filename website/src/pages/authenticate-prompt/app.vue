@@ -92,7 +92,7 @@
 <style lang="scss">
   .authenticate-prompt-app {
     .avatar-sheet {
-      border-radius: 50%;
+      border-radius: 50% !important;
     }
 
     .fill-height {
