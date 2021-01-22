@@ -18,17 +18,28 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
   ) => {
     if (!isObject(request.query)) {
       server.log.warn('Request query is not an object');
-      throw server.httpErrors.badRequest();
+      await reply.redirect(urlJoin(
+        websitePrefix,
+        `/prompt-error?code=invalid_request&description=${
+          encodeURIComponent('Request query is not an object')
+        }`,
+      ));
+      return;
     }
     try {
       validateParam('client_id', request.query.client_id);
       validateParam('redirect_uri', request.query.redirect_uri);
     } catch (error) {
       if (error instanceof ParamError) {
-        throw server.httpErrors.badRequest(error.message);
+        await reply.redirect(urlJoin(
+          websitePrefix,
+          `/prompt-error?code=invalid_request&description=${encodeURIComponent(error.message)}`,
+        ));
+        return;
       }
       server.log.error(error);
-      throw server.httpErrors.internalServerError();
+      await reply.redirect(urlJoin(websitePrefix, '/prompt-error?code=internal'));
+      return;
     }
 
     const application = await database.applicationRepo.findOne({
@@ -36,8 +47,14 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
         clientId: request.query.client_id,
       },
     });
-    if (application === undefined) throw server.httpErrors.badRequest('Unknown application');
-    if (!application.redirectUris.includes(request.query.redirect_uri)) throw server.httpErrors.badRequest('Redirect URI not registered');
+    if (application === undefined) {
+      await reply.redirect(urlJoin(websitePrefix, '/prompt-error?code=unknown_application'));
+      return;
+    }
+    if (!application.redirectUris.includes(request.query.redirect_uri)) {
+      await reply.redirect(urlJoin(websitePrefix, '/prompt-error?code=unknown_redirect_uri'));
+      return;
+    }
 
     try {
       validateParam('response_type', request.query.response_type);

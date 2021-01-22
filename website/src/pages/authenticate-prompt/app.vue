@@ -1,107 +1,96 @@
 <template>
-  <v-app class="authenticate-prompt-app">
-    <div>
-      <div class="text-h4 text-center mt-8">
-        <span class="primary--text">Wulkanowy</span> Bridge
-      </div>
+  <dialog-app class="authenticate-prompt-app">
+    <v-alert type="error" text v-if="!promptId">
+      Brak wymaganego parametru <code>prompt_id</code>
+    </v-alert>
+    <v-alert type="error" text v-else-if="promptInfoError">
+      Nie udało się wczytać danych
+      <template #append>
+        <v-btn text color="error" @click="loadPromptInfo">
+          Spróbuj ponownie
+        </v-btn>
+      </template>
+    </v-alert>
+    <div class="d-flex align-center justify-center mt-16 mb-16" v-else-if="!promptInfo">
+      <v-progress-circular indeterminate :size="96" color="primary" />
     </div>
-    <v-main class="px-4">
-      <v-sheet max-width="500" class="mx-auto mt-16" color="transparent">
-        <v-alert type="error" text v-if="!promptId">
-          Brak wymaganego parametru <code>prompt_id</code>
-        </v-alert>
-        <v-alert type="error" text v-else-if="promptInfoError">
-          Nie udało się wczytać danych
-          <template #append>
-            <v-btn text color="error" @click="loadPromptInfo">
-              Spróbuj ponownie
-            </v-btn>
-          </template>
-        </v-alert>
-        <div class="d-flex align-center justify-center mt-16 mb-16" v-else-if="!promptInfo">
-          <v-progress-circular indeterminate :size="96" color="primary" />
-        </div>
-        <template v-else>
-          <div class="pb-1 text--secondary">
-            Krok <span class="primary--text">{{ step }}/3</span>
-          </div>
-          <v-card outlined>
-            <div class="d-flex justify-center mn-16 avatar__wrapper">
-              <v-badge
-                :color="promptInfo.application.verified ? 'green' : 'grey'"
-                offset-x="64"
-                offset-y="16"
-                bottom
-                :content="promptInfo.application.verified ? 'Zweryfikowana' : 'Niezweryfikowana'"
-                :value="step === 1"
+    <template v-else>
+      <div class="pb-1 text--secondary">
+        Krok <span class="primary--text">{{ step }}/3</span>
+      </div>
+      <v-card outlined>
+        <div class="d-flex justify-center mn-16 avatar__wrapper">
+          <v-badge
+            :color="promptInfo.application.verified ? 'green' : 'grey'"
+            offset-x="64"
+            offset-y="16"
+            bottom
+            :content="promptInfo.application.verified ? 'Zweryfikowana' : 'Niezweryfikowana'"
+            :value="step === 1"
+          >
+            <transition name="scale">
+              <v-sheet
+                v-if="step === 1"
+                width="128"
+                height="128"
+                class="avatar-sheet mx-4 overflow-hidden"
+                outlined
               >
-                <transition name="scale">
-                  <v-sheet
-                    v-if="step === 1"
-                    width="128"
-                    height="128"
-                    class="avatar-sheet mx-4 overflow-hidden"
-                    outlined
+                <v-sheet
+                  class="fill-height d-flex align-center justify-center"
+                  :color="promptInfo.application.iconColor"
+                >
+                  <v-img
+                    :src="promptInfo.application.iconUrl"
+                    width="80"
+                    height="80"
+                    aspect-ratio="1"
+                    contain
                   >
-                    <v-sheet
-                      class="fill-height d-flex align-center justify-center"
-                      :color="promptInfo.application.iconColor"
-                    >
-                      <v-img
-                        :src="promptInfo.application.iconUrl"
-                        width="80"
-                        height="80"
-                        aspect-ratio="1"
-                        contain
-                      >
-                        <template v-slot:placeholder>
-                          <div class="fill-height d-flex align-center justify-center">
-                            <v-icon :size="80">
-                              mdi-help
-                            </v-icon>
-                          </div>
-                        </template>
-                      </v-img>
-                    </v-sheet>
-                  </v-sheet>
-                </transition>
-              </v-badge>
-            </div>
-            <v-window :value="step">
-              <v-window-item :value="1">
-                <overview-window
-                  :promptInfo="promptInfo"
-                  @next="toLoginWindow"
-                />
-              </v-window-item>
-              <v-window-item :value="2" eager>
-                <login-window
-                  ref="loginWindow"
-                  :prompt-info="promptInfo"
-                  @login="login"
-                  @back="loginBack"
-                />
-              </v-window-item>
-              <v-window-item :value="3">
-                <students-window
-                  v-if="students !== null"
-                  :prompt-info="promptInfo"
-                  :students="students"
-                  @back="toLoginWindow"
-                />
-              </v-window-item>
-            </v-window>
-          </v-card>
-        </template>
-      </v-sheet>
-    </v-main>
-  </v-app>
+                    <template v-slot:placeholder>
+                      <div class="fill-height d-flex align-center justify-center">
+                        <v-icon :size="80">
+                          mdi-help
+                        </v-icon>
+                      </div>
+                    </template>
+                  </v-img>
+                </v-sheet>
+              </v-sheet>
+            </transition>
+          </v-badge>
+        </div>
+        <v-window :value="step">
+          <v-window-item :value="1">
+            <overview-window
+              :promptInfo="promptInfo"
+              @next="toLoginWindow"
+            />
+          </v-window-item>
+          <v-window-item :value="2" eager>
+            <login-window
+              ref="loginWindow"
+              :prompt-info="promptInfo"
+              @login="login"
+              @back="loginBack"
+            />
+          </v-window-item>
+          <v-window-item :value="3">
+            <students-window
+              v-if="students !== null"
+              :prompt-info="promptInfo"
+              :students="students"
+              @back="toLoginWindow"
+            />
+          </v-window-item>
+        </v-window>
+      </v-card>
+    </template>
+  </dialog-app>
 </template>
 
 <style lang="scss">
   .authenticate-prompt-app {
-    background-color: #f7f7f7 !important;
-
     .avatar-sheet {
       border-radius: 50%;
     }
@@ -122,10 +111,6 @@
     .scale-enter, .scale-leave-to {
       transform: scale(0);
     }
-
-    .v-card__text, .v-card__title {
-      word-break: normal;
-    }
   }
 </style>
 
@@ -136,10 +121,13 @@ import { PromptInfo, Student } from '@/types';
 import LoginWindow from '@/compontents/authenticate-prompt-windows/login-window.vue';
 import StudentsWindow from '@/compontents/authenticate-prompt-windows/students-window.vue';
 import { sdk } from '@/pages/authenticate-prompt/sdk';
+import DialogApp from '@/compontents/dialog-app.vue';
 
 @Component({
   name: 'AuthenticatePromptApp',
-  components: { LoginWindow, OverviewWindow, StudentsWindow },
+  components: {
+    LoginWindow, OverviewWindow, StudentsWindow, DialogApp,
+  },
 })
 export default class AuthenticatePromptApp extends Vue {
   @Ref() readonly loginWindow!: LoginWindow

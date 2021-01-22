@@ -23,5 +23,11 @@ module.exports = {
         'max-len': ['off']
       },
     },
+    {
+      files: '**/*.vue',
+      rules: {
+        'class-methods-use-this': ['off']
+      }
+    }
   ],
 };
