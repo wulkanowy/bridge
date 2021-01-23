@@ -1,8 +1,9 @@
 import { addSeconds, isAfter } from 'date-fns';
 import type { FastifyLoggerInstance } from 'fastify';
 import { nanoid } from 'nanoid';
+import { UnknownCodeError } from './errors';
 import type { CodeChallenge, CodeContent, CodeInfo } from './types';
-import { createKey, encryptSymmetrical } from './utils';
+import { createKey, decryptSymmetrical, encryptSymmetrical } from './utils';
 
 const codes = new Map<string, CodeInfo>();
 
@@ -15,7 +16,8 @@ export function createCode(options: {
   encryptedPrivateKey: string;
   encryptedPassword: string;
   encryptedSDK: string;
-  codeChallenge?: CodeChallenge
+  codeChallenge?: CodeChallenge;
+  redirectUri: string;
 }): string {
   const expires = addSeconds(new Date(), 60);
   const tokenSecret = createKey();
@@ -35,6 +37,7 @@ export function createCode(options: {
     encryptedPassword: options.encryptedPassword,
     tokenSecret,
     codeChallenge: options.codeChallenge,
+    redirectUri: options.redirectUri,
   });
   const content: CodeContent = {
     tk: options.tokenKey,
@@ -49,4 +52,23 @@ export function cleanUpCodes(logger: FastifyLoggerInstance): void {
       logger.info(`Code ${code.id} expired`);
     }
   });
+}
+
+export function getCode(code: string): {
+  info: CodeInfo,
+  content: CodeContent,
+} {
+  const [id, encryptedContent] = code.split('~');
+  const info = codes.get(id);
+  if (!info) throw new UnknownCodeError();
+  if (isAfter(new Date(), info.expires)) {
+    codes.delete(id);
+    throw new UnknownCodeError();
+  }
+  const content = JSON.parse(decryptSymmetrical(encryptedContent, info.tokenSecret)) as CodeContent;
+  return { info, content };
+}
+
+export function invalidateCode(id: string): void {
+  codes.delete(id);
 }

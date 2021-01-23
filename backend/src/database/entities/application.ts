@@ -14,6 +14,9 @@ export default class Application extends BaseEntity {
   public clientId!: string;
 
   @Column()
+  public clientSecret!: string;
+
+  @Column()
   public name!: string;
 
   @Column()

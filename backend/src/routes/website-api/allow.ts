@@ -66,6 +66,8 @@ export default function registerAllow(server: MyFastifyInstance): void {
       encryptedPassword: prompt.loginInfo.encryptedPassword,
       encryptedPrivateKey: prompt.loginInfo.encryptedPrivateKey,
       tokenKey,
+      codeChallenge: prompt.codeChallenge,
+      redirectUri: prompt.redirectUri,
     });
 
     // TODO: Find why the promise never resolves

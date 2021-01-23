@@ -46,3 +46,7 @@ export function encryptWithPublicKey(value: string, publicKey: string): string {
 export function decryptWithPrivateKey(encrypted: string, privateKey: string): string {
   return crypto.privateDecrypt(privateKey, base64url.toBuffer(encrypted)).toString();
 }
+
+export function sha256(value: string): string {
+  return base64url.encode(crypto.createHash('sha256').update(value).digest());
+}

@@ -77,6 +77,7 @@ export interface CodeInfo {
   encryptedSDK: string;
   encryptedPrivateKey: string;
   codeChallenge?: CodeChallenge;
+  redirectUri: string;
 }
 
 export interface CodeContent {
