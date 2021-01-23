@@ -21,22 +21,25 @@ registerEnumType(StudentsMode, {
   name: 'StudentsMode',
 });
 
+export interface CodeChallenge {
+  value: string;
+  method: 'plain' | 'S256';
+}
+
 export interface Prompt {
   clientId: string;
   redirectUri: string;
   scopes: string[],
   state?: string;
-  codeChallenge?: {
-    value: string;
-    method: 'plain' | 'S256';
-  };
+  codeChallenge?: CodeChallenge;
   studentsMode: StudentsMode;
-  promptSecret: Buffer;
+  promptSecret: string;
   loginInfo?: {
     host: string;
     username: string;
     encryptedPassword: string;
     encryptedSDK: string;
+    encryptedPrivateKey: string;
     publicKey: string;
     availableStudentIds: number[];
   };
@@ -60,4 +63,22 @@ export type MyFastifyInstance = FastifyInstance<RawServerDefault, RawRequestDefa
 export interface ApolloContext {
   request: FastifyRequest;
   reply: FastifyReply,
+}
+
+export interface CodeInfo {
+  id: string;
+  expires: Date;
+  scopes: string[];
+  clientId: string;
+  studentIds: number[];
+  tokenSecret: string;
+  publicKey: string;
+  encryptedPassword: string;
+  encryptedSDK: string;
+  encryptedPrivateKey: string;
+  codeChallenge?: CodeChallenge;
+}
+
+export interface CodeContent {
+  tk: string;
 }

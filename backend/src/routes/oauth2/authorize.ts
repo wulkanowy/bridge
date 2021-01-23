@@ -8,7 +8,7 @@ import type { MyFastifyInstance, StudentsMode } from '../../types';
 
 import {
   createKey,
-  getSessionData, isObject, parseScopeParam, validateOptionalParam, validateParam,
+  getSessionData, isObject, parseArrayParam, validateOptionalParam, validateParam,
 } from '../../utils';
 
 export default function registerAuthorize(server: MyFastifyInstance): void {
@@ -76,7 +76,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
         }
         const studentsMode = request.query.students_mode as StudentsMode;
 
-        const requestedScopes = _.uniq(parseScopeParam('scope', request.query.scope));
+        const requestedScopes = _.uniq(parseArrayParam('scope', request.query.scope));
         requestedScopes.forEach((scope) => {
           if (!scopes.includes(scope)) {
             throw new ScopeError(`Unknown scope ${scope}`);

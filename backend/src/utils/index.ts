@@ -18,8 +18,8 @@ export function requireEnvBase64(name: string): Buffer {
   return Buffer.from(requireEnv(name), 'base64');
 }
 
-export function parseIntStrict(value: string, radix = 10): number {
-  const number = parseInt(value, radix);
+export function parseIntStrict(value: string): number {
+  const number = parseInt(value, 10);
   if (_.isNaN(number)) throw new Error(`Cannot parse ${value} to int`);
   return number;
 }
@@ -44,13 +44,13 @@ export function validateOptionalParam(key: string, value: unknown): asserts valu
   if (typeof value !== 'string') throw new ParamError(`${key} param should be a string`);
 }
 
-export function parseScopeParam(key: string, value: unknown): string[] {
+export function parseArrayParam(key: string, value: unknown): string[] {
   if (value === undefined) throw new ParamError(`${key} param is missing`);
   if (typeof value === 'string') {
     if (value === '') return [];
-    return value.split('+').map((scope) => scope.trim());
+    return value.split(/[+ ]/g).map((item) => item.trim());
   }
-  if (_.isArray(value)) return value.flatMap((e) => parseScopeParam(key, e));
+  if (_.isArray(value)) return value.flatMap((e) => parseArrayParam(key, e));
   throw new ParamError(`${key} param should be a string or an array of strings`);
 }
 
@@ -75,7 +75,6 @@ export async function verifyCaptchaResponse(response: string): Promise<boolean> 
       response,
     },
   });
-  console.log(body);
   return body.success;
 }
 

@@ -20,6 +20,8 @@
     "@types/url-join": "^4.0.0",
     "@wulkanowy/sdk": "^0.1.1",
     "apollo-server-fastify": "^2.19.2",
+    "base64url": "^3.0.1",
+    "date-fns": "^2.16.1",
     "dotenv": "^8.2.0",
     "fastify": "^3.10.1",
     "fastify-cookie": "^5.1.0",

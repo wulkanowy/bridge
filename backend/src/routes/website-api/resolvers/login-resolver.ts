@@ -7,6 +7,7 @@ import {
 } from 'type-graphql';
 import type { SerializedSDK } from '../../../types';
 import {
+  createKey,
   encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, verifyCaptchaResponse,
 } from '../../../utils';
 import { CaptchaError, InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
@@ -39,12 +40,6 @@ export default class LoginResolver {
       throw error;
     }
     const diaryList = await client.getDiaryList();
-    const { privateKey, publicKey } = await generatePrivatePublicPair();
-    const encryptedPrivateKey = encryptSymmetrical(
-      privateKey,
-      prompt.promptSecret,
-    );
-    const encryptedPassword = encryptWithPublicKey(password, publicKey);
     const diaryStudents = _.groupBy(diaryList.map((e) => e.serialized.info), 'studentId');
     const students = _.toPairs(diaryStudents)
       .map(([, diaryInfoList]: [string, DiaryInfo[]]) => diaryInfoList[0])
@@ -56,9 +51,17 @@ export default class LoginResolver {
       client: client.serialize(),
       diaries: diaryList.map(({ serialized }) => serialized),
     };
-    const encryptedSDK = encryptWithPublicKey(JSON.stringify(serializedSDK), publicKey);
+
+    const { privateKey, publicKey } = await generatePrivatePublicPair();
+    const tokenKey = createKey();
+    const encryptedSDK = encryptSymmetrical(JSON.stringify(serializedSDK), tokenKey);
+    const encryptedPassword = encryptWithPublicKey(password, publicKey);
+    const encryptedPrivateKey = encryptSymmetrical(privateKey, tokenKey);
+    const encryptedTokenKey = encryptSymmetrical(tokenKey, prompt.promptSecret);
+
     prompt.loginInfo = {
       encryptedPassword,
+      encryptedPrivateKey,
       encryptedSDK,
       publicKey,
       host,
@@ -66,7 +69,7 @@ export default class LoginResolver {
       availableStudentIds: students.map(({ studentId }) => studentId),
     };
     // TODO: Find why the promise never resolves
-    reply.setCookie(`epk-${promptId}`, encryptedPrivateKey, {
+    reply.setCookie(`etk-${promptId}`, encryptedTokenKey, {
       sameSite: 'strict',
       httpOnly: true,
       path: '/',

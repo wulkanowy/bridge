@@ -8,6 +8,7 @@ import FastifyCookie from 'fastify-cookie';
 import FastifyHttpProxy from 'fastify-http-proxy';
 import FastifySensible from 'fastify-sensible';
 import FastifySession from 'fastify-session';
+import { cleanUpCodes } from './codes';
 import { websitePrefix } from './constants';
 import database from './database/database';
 import registerOAuth from './routes/oauth2';
@@ -48,6 +49,10 @@ async function start() {
   const port = parseIntStrict(requireEnv('PORT'));
   await server.listen(port);
   server.log.info(`Listening on port ${port}`);
+
+  setInterval(() => {
+    cleanUpCodes(server.log);
+  }, 15000);
 }
 
 start()
