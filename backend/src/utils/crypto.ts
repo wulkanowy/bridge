@@ -27,11 +27,11 @@ export function encryptSymmetrical(value: string, key: string): string {
   const ivBuffer = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv('aes-256-cbc', base64url.toBuffer(key), ivBuffer);
   const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
-  return `${base64url.encode(encrypted)}@${base64url.encode(ivBuffer)}`;
+  return `${base64url.encode(encrypted)}.${base64url.encode(ivBuffer)}`;
 }
 
 export function decryptSymmetrical(encrypted: string, key: string): string {
-  const [encryptedData, iv] = encrypted.split('@');
+  const [encryptedData, iv] = encrypted.split('.');
   const ivBuffer = base64url.toBuffer(iv);
   const encryptedBuffer = base64url.toBuffer(encryptedData);
   const decipher = crypto.createDecipheriv('aes-256-cbc', base64url.toBuffer(key), ivBuffer);
