@@ -1,10 +1,12 @@
 import type { FastifyReply } from 'fastify';
 import { getCode, invalidateCode } from '../../codes';
 import database from '../../database/database';
+import Token from '../../database/entities/token';
 import { ParamError } from '../../errors';
-import type { CodeInfo, MyFastifyInstance } from '../../types';
+import type { CodeInfo, MyFastifyInstance, TokenContent } from '../../types';
 
 import {
+  encryptSymmetrical,
   isObject, sha256, validateParam,
 } from '../../utils';
 
@@ -100,10 +102,33 @@ export default function registerToken(server: MyFastifyInstance): void {
         }
       }
 
-      // TODO: Generate and return token;
+      const tokenId = Token.generateTokenId();
+
+      const token = new Token();
+      token.tokenId = tokenId;
+      token.creationDate = new Date();
+      token.clientId = codeInfo.clientId;
+      token.scopes = codeInfo.scopes;
+      token.studentIds = codeInfo.studentIds;
+      token.tokenSecret = codeInfo.tokenSecret;
+      token.userId = codeInfo.userId;
+      token.encryptedPassword = codeInfo.encryptedPassword;
+      token.encryptedPrivateKey = codeInfo.encryptedPrivateKey;
+      token.encryptedSDK = codeInfo.encryptedSDK;
+      token.publicKey = codeInfo.publicKey;
+
+      await database.tokenRepo.save(token);
+
+      const content: TokenContent = {
+        tk: tokenKey,
+      };
 
       invalidateCode(codeInfo.id);
-      await reply.code(500).send('Not implemented');
+      await reply.code(200).send({
+        access_token: `${tokenId}~${encryptSymmetrical(JSON.stringify(content), codeInfo.tokenSecret)}`,
+        token_type: 'bearer',
+        scope: codeInfo.scopes.join(' '),
+      });
       return;
     } catch (error) {
       if (error instanceof ParamError) {

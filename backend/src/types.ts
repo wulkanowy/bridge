@@ -91,3 +91,7 @@ export interface CodeInfo {
 export interface CodeContent {
   tk: string;
 }
+
+export interface TokenContent {
+  tk: string;
+}
