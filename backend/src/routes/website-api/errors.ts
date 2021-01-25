@@ -23,3 +23,11 @@ export class InvalidVulcanCredentialsError extends ApolloError {
     super('Invalid vulcan credentials', 'INVALID_VULCAN_CREDENTIALS');
   }
 }
+
+export class InvalidSymbolError extends ApolloError {
+  public name = 'InvalidSymbolError';
+
+  public constructor() {
+    super('Invalid symbol', 'INVALID_SYMBOL');
+  }
+}

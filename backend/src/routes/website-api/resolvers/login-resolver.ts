@@ -1,18 +1,15 @@
 /* eslint-disable class-methods-use-this */
 import { Client } from '@wulkanowy/sdk';
-import type { DiaryInfo } from '@wulkanowy/sdk/dist/diary/interfaces/diary/diary-info';
-import _ from 'lodash';
+import { UserInputError } from 'apollo-server-fastify';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
-import type { SerializedSDK } from '../../../types';
 import {
   createKey,
   encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, verifyCaptchaResponse,
 } from '../../../utils';
 import { CaptchaError, InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
 import LoginResult from '../models/login-result';
-import type LoginResultStudent from '../models/login-result-student';
 import type { WebsiteAPIContext } from '../types';
 
 @Resolver()
@@ -26,6 +23,8 @@ export default class LoginResolver {
       @Arg('captchaResponse') captchaResponse: string,
       @Ctx() { sessionData, reply }: WebsiteAPIContext,
   ): Promise<LoginResult> {
+    if (username !== username.trim()) throw new UserInputError('Username should be trimmed');
+    if (host !== host.trim()) throw new UserInputError('Host should be trimmed');
     const prompt = sessionData.prompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
     if (!await verifyCaptchaResponse(captchaResponse)) throw new CaptchaError();
@@ -33,28 +32,17 @@ export default class LoginResolver {
       username,
       password,
     }));
+    let symbols: string[];
     try {
-      await client.login();
+      symbols = await client.login();
     } catch (error) {
       if (isObject(error) && error.name === 'InvalidCredentialsError') throw new InvalidVulcanCredentialsError();
       throw error;
     }
-    const diaryList = await client.getDiaryList();
-    const diaryStudents = _.groupBy(diaryList.map((e) => e.serialized.info), 'studentId');
-    const students = _.toPairs(diaryStudents)
-      .map(([, diaryInfoList]: [string, DiaryInfo[]]) => diaryInfoList[0])
-      .map<LoginResultStudent>((diaryInfo) => ({
-      name: `${diaryInfo.studentFirstName} ${diaryInfo.studentSurname}`,
-      studentId: diaryInfo.studentId,
-    }));
-    const serializedSDK: SerializedSDK = {
-      client: client.serialize(),
-      diaries: diaryList.map(({ serialized }) => serialized),
-    };
 
     const { privateKey, publicKey } = await generatePrivatePublicPair();
     const tokenKey = createKey();
-    const encryptedSDK = encryptSymmetrical(JSON.stringify(serializedSDK), tokenKey);
+    const encryptedClient = encryptSymmetrical(JSON.stringify(client.serialize()), tokenKey);
     const encryptedPassword = encryptWithPublicKey(password, publicKey);
     const encryptedPrivateKey = encryptSymmetrical(privateKey, tokenKey);
     const encryptedTokenKey = encryptSymmetrical(tokenKey, prompt.promptSecret);
@@ -62,11 +50,10 @@ export default class LoginResolver {
     prompt.loginInfo = {
       encryptedPassword,
       encryptedPrivateKey,
-      encryptedSDK,
+      encryptedClient,
       publicKey,
       host,
       username,
-      availableStudentIds: students.map(({ studentId }) => studentId),
     };
     // TODO: Find why the promise never resolves
     reply.setCookie(`etk-${promptId}`, encryptedTokenKey, {
@@ -79,7 +66,7 @@ export default class LoginResolver {
     // TODO: Remove
     await new Promise((resolve) => setTimeout(resolve, 100));
     return {
-      students,
+      symbols,
     };
   }
 }

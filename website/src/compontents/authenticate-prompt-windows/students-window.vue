@@ -18,37 +18,33 @@
     >
       Aplikacja nie wymaga dostępu do dzienników uczniów
     </v-alert>
-    <template v-else>
-      <v-divider />
-      <v-list>
-        <v-list-item-group
-          v-model="studentsValue"
-          :multiple="mode === StudentsMode.Many"
-          color="primary"
+    <v-list v-else subheader>
+      <v-list-item-group
+        v-model="studentsValue"
+        :multiple="mode === StudentsMode.Many"
+        color="primary"
+      >
+        <v-list-item
+          v-for="student in students"
+          :key="student.studentId"
+          :value="student.studentId"
         >
-          <v-list-item
-            v-for="student in students"
-            :key="student.studentId"
-            :value="student.studentId"
-          >
-            <template v-slot:default="{ active }">
-              <v-list-item-action>
-                <v-icon v-if="active">
-                  {{ mode === StudentsMode.Many ? '$checkboxOn' : '$radioOn' }}
-                </v-icon>
-                <v-icon v-else>
-                  {{ mode === StudentsMode.Many ? '$checkboxOff' : '$radioOff' }}
-                </v-icon>
-              </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ student.name }}</v-list-item-title>
-              </v-list-item-content>
-            </template>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-      <v-divider />
-    </template>
+          <template v-slot:default="{ active }">
+            <v-list-item-action>
+              <v-icon v-if="active">
+                {{ mode === StudentsMode.Many ? '$checkboxOn' : '$radioOn' }}
+              </v-icon>
+              <v-icon v-else>
+                {{ mode === StudentsMode.Many ? '$checkboxOff' : '$radioOff' }}
+              </v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ student.name }}</v-list-item-title>
+            </v-list-item-content>
+          </template>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
     <v-card-actions>
       <v-btn color="primary" text outlined @click="back">
         Wróć

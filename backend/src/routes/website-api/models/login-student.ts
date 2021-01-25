@@ -1,7 +1,7 @@
 import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
-export default class LoginResultStudent {
+export default class LoginStudent {
   @Field(() => Int)
   public studentId!: number;
 

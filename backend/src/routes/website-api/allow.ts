@@ -1,4 +1,6 @@
 import { URL } from 'url';
+import type { SerializedClient } from '@wulkanowy/sdk/dist/diary/interfaces/serialized-client';
+import type { SerializedDiary } from '@wulkanowy/sdk/dist/diary/interfaces/serialized-diary';
 import { createCode } from '../../codes';
 import { ParamError } from '../../errors';
 import type { MyFastifyInstance, SerializedSDK } from '../../types';
@@ -33,9 +35,12 @@ export default function registerAllow(server: MyFastifyInstance): void {
     const prompt = sessionData.prompts.get(request.query.prompt_id);
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');
     if (!prompt.loginInfo) throw server.httpErrors.badRequest('Login data not provided');
+    if (!prompt.loginInfo.symbolInfo) throw server.httpErrors.badRequest('Symbol not provided');
+    if (!prompt.loginInfo.symbolInfo.userId) throw server.httpErrors.badRequest('User not registered');
 
     const tokenKey = decryptSymmetrical(encryptedTokenKey, prompt.promptSecret);
-    const serializedSDK = JSON.parse(decryptSymmetrical(prompt.loginInfo.encryptedSDK, tokenKey)) as SerializedSDK;
+    const serializedClient = JSON.parse(decryptSymmetrical(prompt.loginInfo.encryptedClient, tokenKey)) as SerializedClient;
+    const serializedDiaries = JSON.parse(decryptSymmetrical(prompt.loginInfo.symbolInfo.encryptedDiaries, tokenKey)) as SerializedDiary[];
 
     let studentIds: number[] = [];
     if (prompt.studentsMode !== StudentsMode.None) {
@@ -50,10 +55,11 @@ export default function registerAllow(server: MyFastifyInstance): void {
         throw server.httpErrors.internalServerError();
       }
     }
+    // TODO: Verify studentIds with availableStudentIds
 
     const newSerializedSDK: SerializedSDK = {
-      client: serializedSDK.client,
-      diaries: serializedSDK.diaries.filter((diary) => studentIds.includes(diary.info.studentId)),
+      client: serializedClient,
+      diaries: serializedDiaries.filter((diary) => studentIds.includes(diary.info.studentId)),
     };
     const newEncryptedSDK = encryptSymmetrical(JSON.stringify(newSerializedSDK), tokenKey);
 
@@ -61,6 +67,7 @@ export default function registerAllow(server: MyFastifyInstance): void {
       studentIds,
       scopes: prompt.scopes,
       clientId: prompt.clientId,
+      userId: prompt.loginInfo.symbolInfo.userId,
       publicKey: prompt.loginInfo.publicKey,
       encryptedSDK: newEncryptedSDK,
       encryptedPassword: prompt.loginInfo.encryptedPassword,

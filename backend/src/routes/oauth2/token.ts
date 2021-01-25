@@ -66,7 +66,9 @@ export default function registerToken(server: MyFastifyInstance): void {
       }
 
       const application = await database.applicationRepo.findOne({
-        clientId: request.body.client_id,
+        where: {
+          clientId: request.body.client_id,
+        },
       });
       if (!application) {
         await sendCustomError(reply, 'invalid_client', 'Application not found', 401);
@@ -98,7 +100,7 @@ export default function registerToken(server: MyFastifyInstance): void {
         }
       }
 
-      // TODO: Generate and return code;
+      // TODO: Generate and return token;
 
       invalidateCode(codeInfo.id);
       await reply.code(500).send('Not implemented');

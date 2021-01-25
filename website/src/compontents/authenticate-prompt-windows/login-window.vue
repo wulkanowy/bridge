@@ -53,16 +53,11 @@
 import {
   Component, Prop, Ref, Vue,
 } from 'vue-property-decorator';
-import { PromptInfo } from '@/types';
+import { PromptInfo, VForm } from '@/types';
 import { hasErrorCode, sdk } from '@/pages/authenticate-prompt/sdk';
 import { InputValidationRules } from 'vuetify';
 import VueRecaptcha from 'vue-recaptcha';
 import { requireEnv } from '@/utils';
-
-interface VForm extends HTMLFormElement {
-  validate(): boolean;
-  resetValidation(): void;
-}
 
 @Component({
   name: 'LoginWindow',
@@ -133,18 +128,21 @@ export default class LoginWindow extends Vue {
     if (this.loading || !this.formValid || !this.captchaResponse) return;
     this.error = null;
     this.loading = true;
+    const username = this.username.trim();
+    const host = this.host.trim();
     try {
       const { login } = await sdk.Login({
         promptId: this.promptInfo.id,
-        host: this.host,
-        username: this.username,
+        host,
+        username,
         password: this.password,
         captchaResponse: this.captchaResponse,
       });
-      const { students } = login;
-      this.$emit('login', { students });
+      const { symbols } = login;
+      this.$emit('login', { symbols, username });
       this.reset();
     } catch (error) {
+      this.recaptcha.reset();
       console.error(error);
       if (hasErrorCode(error, 'INVALID_VULCAN_CREDENTIALS')) this.error = 'invalid-credentials';
       if (hasErrorCode(error, 'CAPTCHA_ERROR')) this.error = 'captcha';

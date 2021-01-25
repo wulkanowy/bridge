@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { ParamError } from '../errors';
 import SessionData from '../session-data';
 import type { SerializedSDK, Session } from '../types';
+import { sha256 } from './crypto';
 
 export * from './crypto';
 

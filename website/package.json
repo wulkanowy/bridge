@@ -13,6 +13,7 @@
     "graphql": "^15.4.0",
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.11.0",
+    "isemail": "^3.2.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",

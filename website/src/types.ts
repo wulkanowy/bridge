@@ -1,3 +1,8 @@
+export interface VForm extends HTMLFormElement {
+  validate(): boolean;
+  resetValidation(): void;
+}
+
 export enum StudentsMode {
   None = 'None',
   One = 'One',

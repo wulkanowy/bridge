@@ -46,7 +46,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { PromptInfo } from '@/types';
-import AppInfoDialog from '@/compontents/authenticate-prompt-windows/app-info-dialog.vue';
+import AppInfoDialog from '@/compontents/app-info-dialog.vue';
 
 @Component({
   name: 'OverviewWindow',

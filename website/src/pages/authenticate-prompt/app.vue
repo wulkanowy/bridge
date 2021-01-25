@@ -15,9 +15,6 @@
       <v-progress-circular indeterminate :size="96" color="primary" />
     </div>
     <template v-else>
-      <div class="pb-1 text--secondary">
-        Krok <span class="primary--text">{{ step }}/3</span>
-      </div>
       <v-card outlined>
         <div class="d-flex justify-center mn-16 avatar__wrapper">
           <v-badge
@@ -26,11 +23,11 @@
             offset-y="16"
             bottom
             :content="promptInfo.application.verified ? 'Zweryfikowana' : 'Niezweryfikowana'"
-            :value="step === 1"
+            :value="step === 'overview'"
           >
             <transition name="scale">
               <v-sheet
-                v-if="step === 1"
+                v-if="step === 'overview'"
                 width="128"
                 height="128"
                 class="avatar-sheet mx-4 overflow-hidden"
@@ -61,13 +58,13 @@
           </v-badge>
         </div>
         <v-window :value="step">
-          <v-window-item :value="1">
+          <v-window-item value="overview">
             <overview-window
               :promptInfo="promptInfo"
               @next="toLoginWindow"
             />
           </v-window-item>
-          <v-window-item :value="2" eager>
+          <v-window-item value="login" eager>
             <login-window
               ref="loginWindow"
               :prompt-info="promptInfo"
@@ -75,12 +72,30 @@
               @back="loginBack"
             />
           </v-window-item>
-          <v-window-item :value="3">
+          <v-window-item value="symbols" eager>
+            <symbols-window
+              v-if="symbols !== null"
+              ref="symbolsWindow"
+              :prompt-info="promptInfo"
+              :symbols="symbols"
+              @back="toLoginWindow"
+              @set-symbol="setSymbol"
+            />
+          </v-window-item>
+          <v-window-item value="email" eager>
+            <email-window
+              ref="emailWindow"
+              :prompt-info="promptInfo"
+              @back="toSymbolsWindow"
+              @create="createUser"
+            />
+          </v-window-item>
+          <v-window-item value="students">
             <students-window
               v-if="students !== null"
               :prompt-info="promptInfo"
               :students="students"
-              @back="toLoginWindow"
+              @back="toSymbolsWindow"
             />
           </v-window-item>
         </v-window>
@@ -122,15 +137,27 @@ import LoginWindow from '@/compontents/authenticate-prompt-windows/login-window.
 import StudentsWindow from '@/compontents/authenticate-prompt-windows/students-window.vue';
 import { sdk } from '@/pages/authenticate-prompt/sdk';
 import DialogApp from '@/compontents/dialog-app.vue';
+import EmailWindow from '@/compontents/authenticate-prompt-windows/email-window.vue';
+import SymbolsWindow from '@/compontents/authenticate-prompt-windows/symbols-window.vue';
+import IsEmail from 'isemail';
 
 @Component({
   name: 'AuthenticatePromptApp',
   components: {
-    LoginWindow, OverviewWindow, StudentsWindow, DialogApp,
+    SymbolsWindow,
+    EmailWindow,
+    LoginWindow,
+    OverviewWindow,
+    StudentsWindow,
+    DialogApp,
   },
 })
 export default class AuthenticatePromptApp extends Vue {
   @Ref() readonly loginWindow!: LoginWindow
+
+  @Ref() readonly emailWindow!: EmailWindow
+
+  @Ref() readonly symbolsWindow!: SymbolsWindow
 
   promptInfo: PromptInfo | null = null;
 
@@ -140,7 +167,11 @@ export default class AuthenticatePromptApp extends Vue {
 
   students: Student[] | null = null;
 
-  step = 1;
+  username: string | null = null;
+
+  symbols: string[] | null = null;
+
+  step = 'overview';
 
   async loadPromptInfo() {
     this.promptInfoError = false;
@@ -167,18 +198,46 @@ export default class AuthenticatePromptApp extends Vue {
   }
 
   toLoginWindow() {
-    this.step = 2;
+    this.step = 'login';
     this.loginWindow.reset();
+    this.symbols = null;
+    this.username = null;
+  }
+
+  toSymbolsWindow() {
     this.students = null;
+    this.step = 'symbols';
+    if (this.symbolsWindow) this.symbolsWindow.reset();
   }
 
   loginBack() {
-    this.step = 1;
+    this.step = 'overview';
   }
 
-  login({ students }: { students: Student[] }) {
+  async login(
+    { username, symbols }: {
+      symbols: string[];
+      username: string;
+    },
+  ) {
+    this.username = username;
+    this.symbols = symbols;
+    this.step = 'symbols';
+    if (this.symbolsWindow) this.symbolsWindow.reset();
+  }
+
+  async setSymbol({ students, registered }: {students: Student[]; registered: boolean}) {
     this.students = students;
-    this.step = 3;
+    if (registered) this.step = 'students';
+    else {
+      if (this.username && IsEmail.validate(this.username)) this.emailWindow.reset(this.username);
+      else this.emailWindow.reset();
+      this.step = 'email';
+    }
+  }
+
+  async createUser() {
+    this.step = 'students';
   }
 }
 </script>
