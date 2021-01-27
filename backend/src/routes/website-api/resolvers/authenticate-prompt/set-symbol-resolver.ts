@@ -7,13 +7,13 @@ import _ from 'lodash';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
-import database from '../../../database/database';
-import User from '../../../database/entities/user';
-import { decryptSymmetrical, decryptWithPrivateKey, encryptSymmetrical } from '../../../utils';
-import { InvalidSymbolError, UnknownPromptError } from '../errors';
-import type LoginStudent from '../models/login-student';
-import SetSymbolResult from '../models/set-symbol-result';
-import type { WebsiteAPIContext } from '../types';
+import database from '../../../../database/database';
+import User from '../../../../database/entities/user';
+import { decryptSymmetrical, decryptWithPrivateKey, encryptSymmetrical } from '../../../../utils';
+import { InvalidSymbolError, UnknownPromptError } from '../../errors';
+import type LoginStudent from '../../models/login-student';
+import SetSymbolResult from '../../models/set-symbol-result';
+import type { WebsiteAPIContext } from '../../types';
 
 @Resolver()
 export default class SetSymbolResolver {
@@ -25,7 +25,7 @@ export default class SetSymbolResolver {
   ): Promise<SetSymbolResult> {
     if (symbol !== symbol.trim()) throw new UserInputError('Symbol should be trimmed');
     if (symbol !== symbol.toLowerCase()) throw new UserInputError('Symbol should be lowercase');
-    const prompt = sessionData.prompts.get(promptId);
+    const prompt = sessionData.authPrompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
     if (!prompt.loginInfo) throw new UserInputError('Login data not provided');
     const { loginInfo } = prompt;

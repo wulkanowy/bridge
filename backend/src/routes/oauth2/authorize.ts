@@ -87,7 +87,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
         const promptId = nanoid(12);
 
         const sessionData = getSessionData(request.session);
-        sessionData.prompts.set(promptId, {
+        sessionData.authPrompts.set(promptId, {
           clientId: request.query.client_id,
           redirectUri: request.query.redirect_uri,
           scopes: requestedScopes,

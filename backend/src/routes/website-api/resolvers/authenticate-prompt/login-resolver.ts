@@ -7,10 +7,10 @@ import {
 import {
   createKey,
   encryptSymmetrical, encryptWithPublicKey, generatePrivatePublicPair, isObject, verifyCaptchaResponse,
-} from '../../../utils';
-import { CaptchaError, InvalidVulcanCredentialsError, UnknownPromptError } from '../errors';
-import LoginResult from '../models/login-result';
-import type { WebsiteAPIContext } from '../types';
+} from '../../../../utils';
+import { CaptchaError, InvalidVulcanCredentialsError, UnknownPromptError } from '../../errors';
+import LoginResult from '../../models/login-result';
+import type { WebsiteAPIContext } from '../../types';
 
 @Resolver()
 export default class LoginResolver {
@@ -25,7 +25,7 @@ export default class LoginResolver {
   ): Promise<LoginResult> {
     if (username !== username.trim()) throw new UserInputError('Username should be trimmed');
     if (host !== host.trim()) throw new UserInputError('Host should be trimmed');
-    const prompt = sessionData.prompts.get(promptId);
+    const prompt = sessionData.authPrompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
     if (!await verifyCaptchaResponse(captchaResponse)) throw new CaptchaError();
     const client = new Client(host, () => ({

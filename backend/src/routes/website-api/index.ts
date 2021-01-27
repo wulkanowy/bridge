@@ -4,10 +4,10 @@ import type { ApolloContext, MyFastifyInstance } from '../../types';
 import { getSessionData } from '../../utils';
 import registerAllow from './allow';
 import registerDeny from './deny';
-import CreateUserResolver from './resolvers/create-user-resolver';
-import LoginResolver from './resolvers/login-resolver';
-import PromptInfoResolver from './resolvers/prompt-info-resolver';
-import SetSymbolResolver from './resolvers/set-symbol-resolver';
+import CreateUserResolver from './resolvers/authenticate-prompt/create-user-resolver';
+import LoginResolver from './resolvers/authenticate-prompt/login-resolver';
+import PromptInfoResolver from './resolvers/authenticate-prompt/prompt-info-resolver';
+import SetSymbolResolver from './resolvers/authenticate-prompt/set-symbol-resolver';
 import type { WebsiteAPIContext } from './types';
 
 export default async function registerWebsiteApi(server: MyFastifyInstance): Promise<void> {

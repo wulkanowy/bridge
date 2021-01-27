@@ -32,7 +32,7 @@ export default function registerAllow(server: MyFastifyInstance): void {
     if (!encryptedTokenKey) throw server.httpErrors.badRequest('Missing etk cookie');
 
     const sessionData = getSessionData(request.session);
-    const prompt = sessionData.prompts.get(request.query.prompt_id);
+    const prompt = sessionData.authPrompts.get(request.query.prompt_id);
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');
     if (!prompt.loginInfo) throw server.httpErrors.badRequest('Login data not provided');
     if (!prompt.loginInfo.symbolInfo) throw server.httpErrors.badRequest('Symbol not provided');
@@ -86,6 +86,6 @@ export default function registerAllow(server: MyFastifyInstance): void {
     redirectUri.searchParams.set('code', code);
     if (prompt.state) redirectUri.searchParams.set('state', prompt.state);
     await reply.redirect(redirectUri.toString());
-    sessionData.prompts.delete(request.query.prompt_id);
+    sessionData.authPrompts.delete(request.query.prompt_id);
   });
 }

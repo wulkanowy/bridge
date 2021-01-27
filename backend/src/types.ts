@@ -27,7 +27,7 @@ export interface CodeChallenge {
   method: 'plain' | 'S256';
 }
 
-export interface Prompt {
+export interface AuthPrompt {
   clientId: string;
   redirectUri: string;
   scopes: string[],

@@ -3,11 +3,11 @@ import { UserInputError } from 'apollo-server-fastify';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
-import database from '../../../database/database';
-import User from '../../../database/entities/user';
-import { UnknownPromptError } from '../errors';
-import CreateUserResult from '../models/create-user-result';
-import type { WebsiteAPIContext } from '../types';
+import database from '../../../../database/database';
+import User from '../../../../database/entities/user';
+import { UnknownPromptError } from '../../errors';
+import CreateUserResult from '../../models/create-user-result';
+import type { WebsiteAPIContext } from '../../types';
 
 @Resolver()
 export default class CreateUserResolver {
@@ -18,7 +18,7 @@ export default class CreateUserResolver {
       @Ctx() { sessionData }: WebsiteAPIContext,
   ): Promise<CreateUserResult> {
     if (email !== email.trim()) throw new UserInputError('Email should be trimmed');
-    const prompt = sessionData.prompts.get(promptId);
+    const prompt = sessionData.authPrompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
     if (!prompt.loginInfo) throw new UserInputError('Login data not provided');
     if (!prompt.loginInfo.symbolInfo) throw new UserInputError('Symbol not provided');

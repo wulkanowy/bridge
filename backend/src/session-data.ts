@@ -1,5 +1,5 @@
-import type { Prompt } from './types';
+import type { AuthPrompt } from './types';
 
 export default class SessionData {
-  public prompts = new Map<string, Prompt>();
+  public authPrompts = new Map<string, AuthPrompt>();
 }

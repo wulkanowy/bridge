@@ -3,12 +3,12 @@ import type { ResolverInterface } from 'type-graphql';
 import {
   Arg, Ctx, FieldResolver, Query, Resolver, Root,
 } from 'type-graphql';
-import database from '../../../database/database';
-import { getUser } from '../../../graphql/github/sdk';
-import { UnknownPromptError } from '../errors';
-import PromptInfo from '../models/prompt-info';
-import type PromptInfoApplication from '../models/prompt-info-application';
-import type { WebsiteAPIContext } from '../types';
+import database from '../../../../database/database';
+import { getUser } from '../../../../graphql/github/sdk';
+import { UnknownPromptError } from '../../errors';
+import PromptInfo from '../../models/prompt-info';
+import type PromptInfoApplication from '../../models/prompt-info-application';
+import type { WebsiteAPIContext } from '../../types';
 
 @Resolver(PromptInfo)
 export default class PromptInfoResolver implements ResolverInterface<PromptInfo> {
@@ -17,7 +17,7 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
     @Arg('promptId') promptId: string,
       @Ctx() { sessionData }: WebsiteAPIContext,
   ): Partial<PromptInfo> {
-    const prompt = sessionData.prompts.get(promptId);
+    const prompt = sessionData.authPrompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
     return {
       id: promptId,

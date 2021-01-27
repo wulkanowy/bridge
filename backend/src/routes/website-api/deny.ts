@@ -27,9 +27,9 @@ export default function registerDeny(server: MyFastifyInstance): void {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const sessionData = getSessionData(request.session);
-    const prompt = sessionData.prompts.get(request.query.prompt_id);
+    const prompt = sessionData.authPrompts.get(request.query.prompt_id);
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');
     await reply.redirect(`${prompt.redirectUri}?error=access_denied&error_description=${encodeURIComponent('User denied')}`);
-    sessionData.prompts.delete(request.query.prompt_id);
+    sessionData.authPrompts.delete(request.query.prompt_id);
   });
 }
