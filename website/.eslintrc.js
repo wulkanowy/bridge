@@ -15,23 +15,23 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'import/prefer-default-export': ['warn'],
-    "prefer-destructuring": ["error", {
-      "array": false,
-      "object": true
-    }]
+    'prefer-destructuring': ['error', {
+      array: false,
+      object: true,
+    }],
   },
   overrides: [
     {
       files: './src/graphql/generated.ts',
       rules: {
-        'max-len': ['off']
+        'max-len': ['off'],
       },
     },
     {
       files: '**/*.vue',
       rules: {
-        'class-methods-use-this': ['off']
-      }
-    }
+        'class-methods-use-this': ['off'],
+      },
+    },
   ],
 };

@@ -15,5 +15,11 @@ module.exports = {
       filename: 'prompt-error.html',
       title: 'Błąd autoryzacji | Wulkanowy Bridge',
     },
+    developer: {
+      entry: 'src/pages/developer/main.ts',
+      template: '/public/index.html',
+      filename: 'developer.html',
+      title: 'Konsola dewelopera | Wulkanowy Bridge',
+    },
   },
 };
