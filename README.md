@@ -1,4 +1,4 @@
-[English version of README](README.md)
+[English version of README](README.en.md)
 # Wulkanowy Bridge
 
 ## Czym jest Wulkanowy Bridge?
