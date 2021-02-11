@@ -111,7 +111,7 @@ export default function registerToken(server: MyFastifyInstance): void {
       token.scopes = codeInfo.scopes;
       token.studentIds = codeInfo.studentIds;
       token.tokenSecret = codeInfo.tokenSecret;
-      token.userId = codeInfo.userId;
+      token.user = codeInfo.user;
       token.encryptedPassword = codeInfo.encryptedPassword;
       token.encryptedPrivateKey = codeInfo.encryptedPrivateKey;
       token.encryptedSDK = codeInfo.encryptedSDK;

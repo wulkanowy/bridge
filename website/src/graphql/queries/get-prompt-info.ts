@@ -11,7 +11,7 @@ export default gql`query GetPromptInfo($promptId: String!) {
       iconColor
       verified
       homepage
-      owner {
+      developer {
         login
         name
         url

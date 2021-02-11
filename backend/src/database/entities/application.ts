@@ -2,8 +2,9 @@ import { nanoid } from 'nanoid';
 import type { ObjectID } from 'typeorm';
 import {
   BaseEntity,
-  Column, Entity, ObjectIdColumn,
+  Column, Entity, ManyToOne, ObjectIdColumn,
 } from 'typeorm';
+import Developer from './developer';
 
 @Entity()
 export default class Application extends BaseEntity {
@@ -31,8 +32,8 @@ export default class Application extends BaseEntity {
   @Column()
   public redirectUris!: string[];
 
-  @Column()
-  public ownerGitHubLogin!: string;
+  @ManyToOne(() => Developer)
+  public developer!: Developer;
 
   @Column()
   public homepage!: string | null;

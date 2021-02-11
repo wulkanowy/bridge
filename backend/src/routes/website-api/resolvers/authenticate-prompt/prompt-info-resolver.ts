@@ -33,6 +33,7 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
       where: {
         clientId: prompt.clientId,
       },
+      relations: ['developer'],
     });
     if (!application) throw new Error('Prompt data not found');
     return {
@@ -41,7 +42,7 @@ export default class PromptInfoResolver implements ResolverInterface<PromptInfo>
       iconColor: application.iconColor,
       verified: application.verified,
       homepage: application.homepage,
-      owner: await getUser(application.ownerGitHubLogin),
+      developer: await getUser(application.developer.gitHubLogin),
     };
   }
 }

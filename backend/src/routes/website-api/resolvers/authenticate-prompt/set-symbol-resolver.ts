@@ -86,7 +86,7 @@ export default class SetSymbolResolver {
       encryptedDiaries,
       loginIds,
       availableStudentIds: students.map(({ studentId }) => studentId),
-      userId: user?._id,
+      user,
     };
     return {
       students,

@@ -1,7 +1,7 @@
 import { addSeconds, isAfter } from 'date-fns';
 import type { FastifyLoggerInstance } from 'fastify';
 import { nanoid } from 'nanoid';
-import type { ObjectID } from 'typeorm';
+import type User from './database/entities/user';
 import { UnknownCodeError } from './errors';
 import type { CodeChallenge, CodeContent, CodeInfo } from './types';
 import { createKey, decryptSymmetrical, encryptSymmetrical } from './utils';
@@ -12,7 +12,7 @@ export function createCode(options: {
   clientId: string;
   scopes: string[];
   studentIds: number[];
-  userId: ObjectID;
+  user: User;
   publicKey: string;
   tokenKey: string;
   encryptedPrivateKey: string;
@@ -31,7 +31,7 @@ export function createCode(options: {
     expires,
     id,
     clientId: options.clientId,
-    userId: options.userId,
+    user: options.user,
     scopes: options.scopes,
     studentIds: options.studentIds,
     publicKey: options.publicKey,

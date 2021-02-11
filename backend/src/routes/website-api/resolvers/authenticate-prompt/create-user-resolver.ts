@@ -40,7 +40,7 @@ export default class CreateUserResolver {
     user.loginIds = prompt.loginInfo.symbolInfo.loginIds;
     user.email = email;
     await database.userRepo.save(user);
-    prompt.loginInfo.symbolInfo.userId = user._id;
+    prompt.loginInfo.symbolInfo.user = user;
     return {
       success: true,
     };

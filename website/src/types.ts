@@ -19,7 +19,7 @@ export interface PromptInfo {
     iconColor: string;
     verified: boolean;
     homepage: string | null;
-    owner: {
+    developer: {
       login: string;
       name: string | null;
       url: string;

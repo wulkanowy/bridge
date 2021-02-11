@@ -9,7 +9,7 @@ import type {
   RawServerDefault,
 } from 'fastify';
 import { registerEnumType } from 'type-graphql';
-import type { ObjectID } from 'typeorm';
+import type User from './database/entities/user';
 import type SessionData from './session-data';
 
 export enum StudentsMode {
@@ -47,7 +47,7 @@ export interface AuthPrompt {
       encryptedDiaries: string;
       availableStudentIds: number[];
       loginIds: string[];
-      userId?: ObjectID,
+      user?: User,
     }
   };
 }
@@ -77,7 +77,7 @@ export interface CodeInfo {
   expires: Date;
   scopes: string[];
   clientId: string;
-  userId: ObjectID,
+  user: User,
   studentIds: number[];
   tokenSecret: string;
   publicKey: string;

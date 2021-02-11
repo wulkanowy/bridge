@@ -65,14 +65,14 @@
             <v-list-item-subtitle class="text-overline">
               Twórca
             </v-list-item-subtitle>
-            <v-list-item-title v-if="promptInfo.application.owner.name">
-              {{ promptInfo.application.owner.name }}
+            <v-list-item-title v-if="promptInfo.application.developer.name">
+              {{ promptInfo.application.developer.name }}
               <span class="text--secondary">
-                ({{ promptInfo.application.owner.login }})
+                ({{ promptInfo.application.developer.login }})
               </span>
             </v-list-item-title>
             <v-list-item-title v-else>
-              {{ promptInfo.application.owner.login }}
+              {{ promptInfo.application.developer.login }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>

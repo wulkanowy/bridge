@@ -18,7 +18,7 @@ export default class PromptInfoApplication {
   public verified!: boolean;
 
   @Field(() => GitHubUser)
-  public owner!: GitHubUser;
+  public developer!: GitHubUser;
 
   @Field(() => String, {
     nullable: true,

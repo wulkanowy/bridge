@@ -45,7 +45,7 @@ export type PromptInfoApplication = {
   iconUrl: Maybe<Scalars['String']>;
   iconColor: Scalars['String'];
   verified: Scalars['Boolean'];
-  owner: GitHubUser;
+  developer: GitHubUser;
   homepage: Maybe<Scalars['String']>;
 };
 
@@ -161,7 +161,7 @@ export type GetPromptInfoQuery = (
     & { application: (
       { __typename?: 'PromptInfoApplication' }
       & Pick<PromptInfoApplication, 'name' | 'iconUrl' | 'iconColor' | 'verified' | 'homepage'>
-      & { owner: (
+      & { developer: (
         { __typename?: 'GitHubUser' }
         & Pick<GitHubUser, 'login' | 'name' | 'url'>
       ); }
@@ -212,7 +212,7 @@ export const GetPromptInfoDocument = gql`
       iconColor
       verified
       homepage
-      owner {
+      developer {
         login
         name
         url

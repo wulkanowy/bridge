@@ -1,6 +1,7 @@
 import type { Connection, Repository } from 'typeorm';
 import { createConnection } from 'typeorm';
 import Application from './entities/application';
+import Developer from './entities/developer';
 import Token from './entities/token';
 import User from './entities/user';
 
@@ -13,6 +14,8 @@ class Database {
 
   public tokenRepo!: Repository<Token>;
 
+  public developerRepo!: Repository<Developer>;
+
   public async connect(): Promise<void> {
     this.connection = await createConnection({
       type: 'mongodb',
@@ -23,6 +26,7 @@ class Database {
         Application,
         User,
         Token,
+        Developer,
       ],
       useUnifiedTopology: true,
       logging: false,
@@ -30,6 +34,7 @@ class Database {
     this.applicationRepo = this.connection.getRepository(Application);
     this.userRepo = this.connection.getRepository(User);
     this.tokenRepo = this.connection.getRepository(Token);
+    this.developerRepo = this.connection.getRepository(Developer);
   }
 }
 
