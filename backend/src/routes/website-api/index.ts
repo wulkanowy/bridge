@@ -4,6 +4,7 @@ import type { ApolloContext, MyFastifyInstance } from '../../types';
 import { getSessionData } from '../../utils';
 import registerAllow from './allow';
 import registerDeny from './deny';
+import registerGitHubCallback from './developer/github-callback';
 import registerGitHubSignIn from './developer/github-sign-in';
 import CreateUserResolver from './resolvers/authenticate-prompt/create-user-resolver';
 import LoginResolver from './resolvers/authenticate-prompt/login-resolver';
@@ -38,4 +39,5 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
   registerAllow(server);
 
   registerGitHubSignIn(server);
+  registerGitHubCallback(server);
 }

@@ -33,6 +33,9 @@ export default function registerGitHubSignIn(server: MyFastifyInstance): void {
     authorizeUrl.searchParams.set('response_type', 'code');
     authorizeUrl.searchParams.set('redirect_uri', requireEnv('GITHUB_REDIRECT_URL'));
     authorizeUrl.searchParams.set('state', state);
+    sessionData.gitHubAuthorizations.set(state, {
+      returnTo: request.query.return_to,
+    });
     await reply.redirect(authorizeUrl.toString());
   });
 }
