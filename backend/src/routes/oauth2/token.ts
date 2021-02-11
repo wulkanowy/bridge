@@ -1,6 +1,6 @@
 import type { FastifyReply } from 'fastify';
 import { getCode, invalidateCode } from '../../codes';
-import database from '../../database/database';
+import Client from '../../database/entities/client';
 import Token from '../../database/entities/token';
 import { ParamError } from '../../errors';
 import type { CodeInfo, MyFastifyInstance, TokenContent } from '../../types';
@@ -67,13 +67,13 @@ export default function registerToken(server: MyFastifyInstance): void {
         return;
       }
 
-      const application = await database.applicationRepo.findOne({
+      const client = await Client.findOne({
         where: {
           clientId: request.body.client_id,
         },
       });
-      if (!application) {
-        await sendCustomError(reply, 'invalid_client', 'Application not found', 401);
+      if (!client) {
+        await sendCustomError(reply, 'invalid_client', 'Client id not found', 401);
         return;
       }
 
@@ -96,7 +96,7 @@ export default function registerToken(server: MyFastifyInstance): void {
         }
       } else {
         validateParam('client_secret', request.body.client_secret);
-        if (application.clientSecret !== request.body.client_secret) {
+        if (client.clientSecret !== request.body.client_secret) {
           await sendCustomError(reply, 'invalid_client', 'Invalid client secret', 401);
           return;
         }
@@ -111,13 +111,13 @@ export default function registerToken(server: MyFastifyInstance): void {
       token.scopes = codeInfo.scopes;
       token.studentIds = codeInfo.studentIds;
       token.tokenSecret = codeInfo.tokenSecret;
-      token.user = codeInfo.user;
+      token.userId = codeInfo.userId;
       token.encryptedPassword = codeInfo.encryptedPassword;
       token.encryptedPrivateKey = codeInfo.encryptedPrivateKey;
       token.encryptedSDK = codeInfo.encryptedSDK;
       token.publicKey = codeInfo.publicKey;
 
-      await database.tokenRepo.save(token);
+      await token.save();
 
       const content: TokenContent = {
         tk: tokenKey,

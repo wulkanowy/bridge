@@ -7,7 +7,6 @@ import _ from 'lodash';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
-import database from '../../../../database/database';
 import User from '../../../../database/entities/user';
 import { decryptSymmetrical, decryptWithPrivateKey, encryptSymmetrical } from '../../../../utils';
 import { InvalidSymbolError, UnknownPromptError } from '../../errors';
@@ -64,7 +63,7 @@ export default class SetSymbolResolver {
     const encryptedClient = encryptSymmetrical(JSON.stringify(client.serialize()), tokenKey);
     const encryptedDiaries = encryptSymmetrical(JSON.stringify(diaryList.map(({ serialized }) => serialized)), tokenKey);
 
-    const user = await database.userRepo.findOne({
+    const user = await User.findOne({
       where: {
         host: prompt.loginInfo.host,
         symbol,
@@ -86,7 +85,7 @@ export default class SetSymbolResolver {
       encryptedDiaries,
       loginIds,
       availableStudentIds: students.map(({ studentId }) => studentId),
-      user,
+      userId: user?._id,
     };
     return {
       students,

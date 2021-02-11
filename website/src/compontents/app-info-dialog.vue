@@ -54,7 +54,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          :href="promptInfo.application.owner.url"
+          :href="promptInfo.application.developer.url"
           target="_blank"
           rel="noopener"
         >

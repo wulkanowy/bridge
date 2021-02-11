@@ -8,7 +8,7 @@
     "lint": "eslint src -c .eslintrc.json --ext .ts",
     "lint:fix": "eslint src -c .eslintrc.json --ext .ts --fix",
     "start": "ts-node .",
-    "dev": "ts-node-dev ."
+    "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"npm run start\""
   },
   "author": "Dominik Korsa <dominik.korsa@gmail.com>",
   "license": "MIT",
@@ -49,6 +49,6 @@
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-plugin-import": "^2.22.1",
-    "ts-node-dev": "^1.1.1"
+    "nodemon": "^2.0.7"
   }
 }

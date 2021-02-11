@@ -3,7 +3,6 @@ import { UserInputError } from 'apollo-server-fastify';
 import {
   Arg, Ctx, Mutation, Resolver,
 } from 'type-graphql';
-import database from '../../../../database/database';
 import User from '../../../../database/entities/user';
 import { UnknownPromptError } from '../../errors';
 import CreateUserResult from '../../models/create-user-result';
@@ -23,7 +22,7 @@ export default class CreateUserResolver {
     if (!prompt.loginInfo) throw new UserInputError('Login data not provided');
     if (!prompt.loginInfo.symbolInfo) throw new UserInputError('Symbol not provided');
 
-    const existingUser = await database.userRepo.findOne({
+    const existingUser = await User.findOne({
       where: {
         host: prompt.loginInfo.host,
         symbol: prompt.loginInfo.symbolInfo.symbol,
@@ -39,8 +38,8 @@ export default class CreateUserResolver {
     user.username = prompt.loginInfo.username;
     user.loginIds = prompt.loginInfo.symbolInfo.loginIds;
     user.email = email;
-    await database.userRepo.save(user);
-    prompt.loginInfo.symbolInfo.user = user;
+    await user.save();
+    prompt.loginInfo.symbolInfo.userId = user._id;
     return {
       success: true,
     };

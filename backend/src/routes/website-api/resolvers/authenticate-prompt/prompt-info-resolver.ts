@@ -1,48 +1,47 @@
 /* eslint-disable class-methods-use-this */
-import type { ResolverInterface } from 'type-graphql';
+import { ApolloError } from 'apollo-server-fastify';
 import {
-  Arg, Ctx, FieldResolver, Query, Resolver, Root,
+  Arg, Ctx, Query, Resolver,
 } from 'type-graphql';
-import database from '../../../../database/database';
+import Application from '../../../../database/entities/application';
+import Client from '../../../../database/entities/client';
+import Developer from '../../../../database/entities/developer';
 import { getUser } from '../../../../graphql/github/sdk';
 import { UnknownPromptError } from '../../errors';
 import PromptInfo from '../../models/prompt-info';
-import type PromptInfoApplication from '../../models/prompt-info-application';
 import type { WebsiteAPIContext } from '../../types';
 
 @Resolver(PromptInfo)
-export default class PromptInfoResolver implements ResolverInterface<PromptInfo> {
+export default class PromptInfoResolver {
   @Query(() => PromptInfo)
-  public promptInfo(
+  public async promptInfo(
     @Arg('promptId') promptId: string,
       @Ctx() { sessionData }: WebsiteAPIContext,
-  ): Partial<PromptInfo> {
+  ): Promise<Partial<PromptInfo>> {
     const prompt = sessionData.authPrompts.get(promptId);
     if (!prompt) throw new UnknownPromptError();
-    return {
-      id: promptId,
-      clientId: prompt.clientId,
-      scopes: prompt.scopes,
-      studentsMode: prompt.studentsMode,
-    };
-  }
-
-  @FieldResolver()
-  public async application(@Root() prompt: PromptInfo): Promise<PromptInfoApplication> {
-    const application = await database.applicationRepo.findOne({
+    const client = await Client.findOne({
       where: {
         clientId: prompt.clientId,
       },
-      relations: ['developer'],
     });
-    if (!application) throw new Error('Prompt data not found');
+    if (!client) throw new ApolloError('Client not found');
+    const application = await Application.findOne(client.applicationId);
+    if (!application) throw new ApolloError('Application not found');
+    const developer = await Developer.findOne(application.developerId);
+    if (!developer) throw new ApolloError('Developer not found');
     return {
-      name: application.name,
-      iconUrl: application.iconUrl,
-      iconColor: application.iconColor,
-      verified: application.verified,
-      homepage: application.homepage,
-      developer: await getUser(application.developer.gitHubLogin),
+      id: promptId,
+      scopes: prompt.scopes,
+      studentsMode: prompt.studentsMode,
+      application: {
+        name: application.name,
+        iconUrl: application.iconUrl,
+        iconColor: application.iconColor,
+        verified: application.verified,
+        homepage: application.homepage,
+        developer: await getUser(developer.gitHubLogin),
+      },
     };
   }
 }

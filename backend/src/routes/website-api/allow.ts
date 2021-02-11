@@ -36,7 +36,7 @@ export default function registerAllow(server: MyFastifyInstance): void {
     if (!prompt) throw server.httpErrors.badRequest('Prompt data not found');
     if (!prompt.loginInfo) throw server.httpErrors.badRequest('Login data not provided');
     if (!prompt.loginInfo.symbolInfo) throw server.httpErrors.badRequest('Symbol not provided');
-    if (!prompt.loginInfo.symbolInfo.user) throw server.httpErrors.badRequest('User not registered');
+    if (!prompt.loginInfo.symbolInfo.userId) throw server.httpErrors.badRequest('User not registered');
 
     const tokenKey = decryptSymmetrical(encryptedTokenKey, prompt.promptSecret);
     const serializedClient = JSON.parse(decryptSymmetrical(prompt.loginInfo.encryptedClient, tokenKey)) as SerializedClient;
@@ -67,7 +67,7 @@ export default function registerAllow(server: MyFastifyInstance): void {
       studentIds,
       scopes: prompt.scopes,
       clientId: prompt.clientId,
-      user: prompt.loginInfo.symbolInfo.user,
+      userId: prompt.loginInfo.symbolInfo.userId,
       publicKey: prompt.loginInfo.publicKey,
       encryptedSDK: newEncryptedSDK,
       encryptedPassword: prompt.loginInfo.encryptedPassword,

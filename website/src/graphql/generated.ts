@@ -28,7 +28,6 @@ export type PromptInfo = {
   __typename?: 'PromptInfo';
   id: Scalars['String'];
   scopes: Array<Scalars['String']>;
-  clientId: Scalars['String'];
   studentsMode: StudentsMode;
   application: PromptInfoApplication;
 };

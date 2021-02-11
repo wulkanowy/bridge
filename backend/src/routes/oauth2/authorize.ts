@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import urlJoin from 'url-join';
 import { scopes, websitePrefix } from '../../constants';
-import database from '../../database/database';
+import Client from '../../database/entities/client';
 import { ParamError, ScopeError } from '../../errors';
 import type { MyFastifyInstance, StudentsMode } from '../../types';
 
@@ -42,16 +42,16 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
       return;
     }
 
-    const application = await database.applicationRepo.findOne({
+    const client = await Client.findOne({
       where: {
         clientId: request.query.client_id,
       },
     });
-    if (application === undefined) {
+    if (client === undefined) {
       await reply.redirect(urlJoin(websitePrefix, '/prompt-error?code=unknown_application'));
       return;
     }
-    if (!application.redirectUris.includes(request.query.redirect_uri)) {
+    if (!client.redirectUris.includes(request.query.redirect_uri)) {
       await reply.redirect(urlJoin(websitePrefix, '/prompt-error?code=unknown_redirect_uri'));
       return;
     }
@@ -88,7 +88,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
 
         const sessionData = getSessionData(request.session);
         sessionData.authPrompts.set(promptId, {
-          clientId: request.query.client_id,
+          clientId: client.clientId,
           redirectUri: request.query.redirect_uri,
           scopes: requestedScopes,
           state: request.query.state,

@@ -1,9 +1,8 @@
 import { nanoid } from 'nanoid';
 import type { ObjectID } from 'typeorm';
 import {
-  BaseEntity, Column, Entity, ManyToOne, ObjectIdColumn,
+  BaseEntity, Column, Entity, ObjectIdColumn,
 } from 'typeorm';
-import User from './user';
 
 @Entity()
 export default class Token extends BaseEntity {
@@ -25,8 +24,8 @@ export default class Token extends BaseEntity {
   @Column()
   public clientId!: string;
 
-  @ManyToOne(() => User)
-  public user!: User;
+  @Column()
+  public userId!: ObjectID;
 
   @Column()
   public tokenSecret!: string;

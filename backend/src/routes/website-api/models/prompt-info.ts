@@ -10,9 +10,6 @@ export default class PromptInfo {
   @Field(() => [String])
   public scopes!: string[];
 
-  @Field(() => String)
-  public clientId!: string;
-
   @Field(() => StudentsMode)
   public studentsMode!: StudentsMode;
 
