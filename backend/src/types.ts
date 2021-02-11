@@ -95,3 +95,7 @@ export interface CodeContent {
 export interface TokenContent {
   tk: string;
 }
+
+export interface GitHubAuthorization {
+  returnTo: string;
+}
