@@ -9,6 +9,10 @@ const routes: Array<RouteConfig> = [
     name: 'Home',
     component: () => import(/* webpackChunkName: "developer-home" */ './views/home.vue'),
   },
+  {
+    path: '*',
+    redirect: '/',
+  },
 ];
 
 const router = new VueRouter({

@@ -9,13 +9,38 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-title>Developer</v-app-bar-title>
       <v-spacer />
-      <v-app-bar-title>
-        {{ loginState.name }} | {{ loginState.login }}
-      </v-app-bar-title>
-      <v-btn icon>
-        <v-img :src="loginState.avatarUrl" :width="48" />
-      </v-btn>
-      <v-btn outlined href="/api/website/developer/sign-out">Sign out</v-btn>
+      <v-menu offset-y nudge-bottom="12" min-width="350">
+        <template #activator="{ on }">
+          <v-btn icon v-on="on">
+            <v-avatar>
+              <v-img :src="loginState.avatarUrl" :width="48" />
+            </v-avatar>
+          </v-btn>
+        </template>
+        <v-card outlined>
+          <v-card-title v-if="loginState.name" class="d-block">
+            {{ loginState.name }}
+            <span class="text--secondary">
+              ({{ loginState.login }})
+            </span>
+          </v-card-title>
+          <v-card-title v-else>
+            {{ loginState.login }}
+          </v-card-title>
+          <v-card-subtitle>Developer account</v-card-subtitle>
+          <v-divider />
+          <v-card-actions>
+            <v-btn
+              block
+              color="primary"
+              outlined
+              href="/api/website/developer/sign-out"
+            >
+              Sign out
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
     </v-app-bar>
     <router-view />
   </v-app>
