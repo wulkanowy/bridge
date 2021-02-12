@@ -5,6 +5,7 @@ documents:
   - src/graphql/mutations/login.ts
   - src/graphql/mutations/set-symbol.ts
   - src/graphql/mutations/create-user.ts
+  - src/graphql/mutations/create-application.ts
 generates:
   ./src/graphql/generated.ts:
     plugins:

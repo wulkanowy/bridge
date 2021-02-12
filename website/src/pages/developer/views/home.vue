@@ -4,16 +4,19 @@
       Your applications
     </div>
     <div class="applications">
-      <v-card
-        link
-        outlined
-        class="d-flex flex-column align-center justify-center text-center"
-        color="primary--text"
-        to="/new-app"
-      >
-        <v-icon color="primary" :size="64">mdi-plus</v-icon>
-        <div class="text-h5 my-2">New app</div>
-      </v-card>
+      <new-app-dialog>
+        <template #activator="{ on }">
+          <v-card
+            outlined
+            class="d-flex flex-column align-center justify-center text-center"
+            color="primary--text"
+            v-on="on"
+          >
+            <v-icon color="primary" :size="64">mdi-plus</v-icon>
+            <div class="text-h5 my-2">New app</div>
+          </v-card>
+        </template>
+      </new-app-dialog>
       <v-card
         v-for="i in 18"
         :key="i"
@@ -51,10 +54,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import AppIcon from '@/pages/app-icon.vue';
+import NewAppDialog from '@/compontents/developer/new-app-dialog.vue';
 
 @Component({
   name: 'DeveloperHome',
-  components: { AppIcon },
+  components: { NewAppDialog, AppIcon },
 })
 export default class DeveloperHome extends Vue {
 
