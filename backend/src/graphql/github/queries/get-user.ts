@@ -5,6 +5,7 @@ export const getUserQuery = gql`query GetUser($login: String!) {
     login
     name
     url
+    avatarUrl
   }
 }
 `;
@@ -13,6 +14,7 @@ export interface User {
   login: string;
   name: string | null;
   url: string;
+  avatarUrl: string;
 }
 
 export interface GetUserQueryResult {

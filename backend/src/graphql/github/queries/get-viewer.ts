@@ -3,8 +3,6 @@ import gql from 'graphql-tag';
 export const getViewerQuery = gql`query GetViewer {
   viewer {
     login
-    name
-    avatarUrl
     id
   }
 }
@@ -12,8 +10,6 @@ export const getViewerQuery = gql`query GetViewer {
 
 export interface Viewer {
   login: string;
-  name: string | null;
-  avatarUrl: string;
   id: string;
 }
 
