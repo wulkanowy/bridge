@@ -15,6 +15,7 @@
       <v-btn icon>
         <v-img :src="loginState.avatarUrl" :width="48" />
       </v-btn>
+      <v-btn outlined href="/api/website/developer/sign-out">Sign out</v-btn>
     </v-app-bar>
     <router-view />
   </v-app>

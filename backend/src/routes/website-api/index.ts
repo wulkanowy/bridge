@@ -6,6 +6,7 @@ import registerAllow from './allow';
 import registerDeny from './deny';
 import registerGitHubCallback from './developer/github-callback';
 import registerGitHubSignIn from './developer/github-sign-in';
+import registerSignOut from './developer/sign-out';
 import CreateUserResolver from './resolvers/authenticate-prompt/create-user-resolver';
 import LoginResolver from './resolvers/authenticate-prompt/login-resolver';
 import PromptInfoResolver from './resolvers/authenticate-prompt/prompt-info-resolver';
@@ -42,4 +43,5 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
 
   registerGitHubSignIn(server);
   registerGitHubCallback(server);
+  registerSignOut(server);
 }
