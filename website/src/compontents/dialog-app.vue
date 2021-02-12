@@ -5,7 +5,7 @@
         <span class="primary--text">Wulkanowy</span> Bridge
       </div>
     </div>
-    <v-main class="px-4">
+    <v-main class="px-4 pt-4">
       <v-sheet max-width="500" class="mx-auto mt-16" color="transparent">
         <slot />
       </v-sheet>

@@ -16,7 +16,7 @@
     </div>
     <template v-else>
       <v-card outlined>
-        <div class="d-flex justify-center mn-16 avatar__wrapper">
+        <div class="d-flex justify-center app-icon-wrapper">
           <v-badge
             :color="promptInfo.application.verified ? 'green' : 'grey'"
             offset-x="64"
@@ -26,34 +26,13 @@
             :value="step === 'overview'"
           >
             <transition name="scale">
-              <v-sheet
+              <app-icon
                 v-if="step === 'overview'"
-                width="128"
-                height="128"
-                class="avatar-sheet mx-4 overflow-hidden"
-                outlined
-              >
-                <v-sheet
-                  class="fill-height d-flex align-center justify-center"
-                  :color="promptInfo.application.iconColor"
-                >
-                  <v-img
-                    :src="promptInfo.application.iconUrl"
-                    width="80"
-                    height="80"
-                    aspect-ratio="1"
-                    contain
-                  >
-                    <template v-slot:placeholder>
-                      <div class="fill-height d-flex align-center justify-center">
-                        <v-icon :size="80">
-                          mdi-help
-                        </v-icon>
-                      </div>
-                    </template>
-                  </v-img>
-                </v-sheet>
-              </v-sheet>
+                class="mx-4"
+                :color="promptInfo.application.iconColor"
+                :url="promptInfo.application.iconUrl"
+                large
+              />
             </transition>
           </v-badge>
         </div>
@@ -106,15 +85,11 @@
 
 <style lang="scss">
   .authenticate-prompt-app {
-    .avatar-sheet {
-      border-radius: 50% !important;
-    }
-
     .fill-height {
       height: 100%;
     }
 
-    .avatar__wrapper {
+    .app-icon-wrapper {
       position: absolute;
       top: -64px;
       width: 100%;
@@ -140,10 +115,12 @@ import DialogApp from '@/compontents/dialog-app.vue';
 import EmailWindow from '@/compontents/authenticate-prompt-windows/email-window.vue';
 import SymbolsWindow from '@/compontents/authenticate-prompt-windows/symbols-window.vue';
 import IsEmail from 'isemail';
+import AppIcon from '@/pages/app-icon.vue';
 
 @Component({
   name: 'AuthenticatePromptApp',
   components: {
+    AppIcon,
     SymbolsWindow,
     EmailWindow,
     LoginWindow,

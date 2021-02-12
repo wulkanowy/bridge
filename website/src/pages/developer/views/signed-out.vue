@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <div>
       <div class="text-h4 text-center mt-8 mx-2">
         <span class="primary--text">Wulkanowy</span> Bridge<br>
@@ -35,7 +35,7 @@
         </v-btn>
       </v-sheet>
     </v-main>
-  </v-app>
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,7 +1,5 @@
 import got from 'got';
-import urlJoin from 'url-join';
 import Developer from '../../../database/entities/developer';
-import User from '../../../database/entities/user';
 import { ParamError } from '../../../errors';
 import { getViewer } from '../../../graphql/github/sdk';
 import type SessionData from '../../../session-data';
@@ -15,7 +13,7 @@ function getAuthorization(sessionData: SessionData, state?: string): GitHubAutho
   return sessionData.gitHubAuthorizations.get(state) ?? null;
 }
 
-export default function registerGitHubCallback(server: MyFastifyInstance) {
+export default function registerGitHubCallback(server: MyFastifyInstance): void {
   server.get('/developer/github-callback', async (
     request,
     reply,
@@ -83,6 +81,7 @@ export default function registerGitHubCallback(server: MyFastifyInstance) {
       sessionData.loginState = {
         developerId: developer._id,
       };
+      sessionData.gitHubAuthorizations.delete(request.query.state);
       await reply.redirect(authorization.returnTo);
     } catch (error) {
       server.log.error(error);
