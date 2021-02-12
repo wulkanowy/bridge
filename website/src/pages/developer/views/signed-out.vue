@@ -47,7 +47,7 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class DeveloperSignedOut extends Vue {
   get signInUrl() {
     const url = new URL('/api/website/developer/sign-in/github', window.location.toString());
-    url.searchParams.set('return_to', this.$route.path);
+    url.searchParams.set('return_to', `${window.location.pathname}${window.location.search}${window.location.hash}`);
     return url.toString();
   }
 }

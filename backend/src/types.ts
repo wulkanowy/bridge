@@ -99,3 +99,7 @@ export interface TokenContent {
 export interface GitHubAuthorization {
   returnTo: string;
 }
+
+export interface DeveloperLoginState {
+  developerId: ObjectID,
+}

@@ -38,10 +38,7 @@ export default function registerGitHubCallback(server: MyFastifyInstance) {
     if (request.query.error) {
       if (authorization && request.query.state) sessionData.gitHubAuthorizations.delete(request.query.state);
       if (request.query.error === 'access_denied') {
-        await reply.redirect(urlJoin(
-          '/developer/',
-          authorization?.returnTo ?? '/',
-        ));
+        await reply.redirect(authorization?.returnTo ?? '/');
       }
       throw server.httpErrors.internalServerError(`Got error response: "${request.query.error}"`);
     }
@@ -83,14 +80,13 @@ export default function registerGitHubCallback(server: MyFastifyInstance) {
       }
       developer.gitHubLogin = viewer.login;
       await developer.save();
-      console.log(developer);
+      sessionData.loginState = {
+        developerId: developer._id,
+      };
+      await reply.redirect(authorization.returnTo);
     } catch (error) {
       server.log.error(error);
       throw server.httpErrors.internalServerError();
     }
-    // TODO: Store login info in session
-    // TODO: Redirect to returnTo
-
-    await reply.send('DONE');
   });
 }
