@@ -18,6 +18,7 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   promptInfo: PromptInfo;
+  loginState: Maybe<LoginState>;
 };
 
 export type QueryPromptInfoArgs = {
@@ -53,6 +54,13 @@ export type GitHubUser = {
   login: Scalars['String'];
   name: Maybe<Scalars['String']>;
   url: Scalars['String'];
+};
+
+export type LoginState = {
+  __typename?: 'LoginState';
+  name: Maybe<Scalars['String']>;
+  login: Scalars['String'];
+  avatarUrl: Scalars['String'];
 };
 
 export type Mutation = {
@@ -148,6 +156,16 @@ export type SetSymbolMutation = (
   ); }
 );
 
+export type GetLoginStateQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetLoginStateQuery = (
+  { __typename?: 'Query' }
+  & { loginState: Maybe<(
+    { __typename?: 'LoginState' }
+    & Pick<LoginState, 'name' | 'avatarUrl' | 'login'>
+  )>; }
+);
+
 export type GetPromptInfoQueryVariables = Exact<{
   promptId: Scalars['String'];
 }>;
@@ -199,6 +217,15 @@ export const SetSymbolDocument = gql`
   }
 }
     `;
+export const GetLoginStateDocument = gql`
+    query GetLoginState {
+  loginState {
+    name
+    avatarUrl
+    login
+  }
+}
+    `;
 export const GetPromptInfoDocument = gql`
     query GetPromptInfo($promptId: String!) {
   promptInfo(promptId: $promptId) {
@@ -234,6 +261,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     SetSymbol(variables: SetSymbolMutationVariables, requestHeaders?: Headers): Promise<SetSymbolMutation> {
       return withWrapper(() => client.request<SetSymbolMutation>(print(SetSymbolDocument), variables, requestHeaders));
+    },
+    GetLoginState(variables?: GetLoginStateQueryVariables, requestHeaders?: Headers): Promise<GetLoginStateQuery> {
+      return withWrapper(() => client.request<GetLoginStateQuery>(print(GetLoginStateDocument), variables, requestHeaders));
     },
     GetPromptInfo(variables: GetPromptInfoQueryVariables, requestHeaders?: Headers): Promise<GetPromptInfoQuery> {
       return withWrapper(() => client.request<GetPromptInfoQuery>(print(GetPromptInfoDocument), variables, requestHeaders));

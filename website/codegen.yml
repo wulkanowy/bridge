@@ -1,6 +1,7 @@
 schema: http://localhost:3000/api/website/graphql
 documents:
   - src/graphql/queries/get-prompt-info.ts
+  - src/graphql/queries/get-login-state.ts
   - src/graphql/mutations/login.ts
   - src/graphql/mutations/set-symbol.ts
   - src/graphql/mutations/create-user.ts
