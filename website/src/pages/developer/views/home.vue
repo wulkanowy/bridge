@@ -84,7 +84,6 @@ export default class DeveloperHome extends Vue {
     this.applications = null;
     this.applicationError = false;
     try {
-      await new Promise((resolve) => setTimeout(resolve, 300));
       const result = await sdk.GetApplications();
       this.applications = result.applications;
     } catch (error) {
