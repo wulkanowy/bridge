@@ -11,7 +11,7 @@ import CreateUserResolver from './resolvers/authenticate-prompt/create-user-reso
 import LoginResolver from './resolvers/authenticate-prompt/login-resolver';
 import PromptInfoResolver from './resolvers/authenticate-prompt/prompt-info-resolver';
 import SetSymbolResolver from './resolvers/authenticate-prompt/set-symbol-resolver';
-import CreateApplicationResolver from './resolvers/developer/create-application';
+import ApplicationResolver from './resolvers/developer/application';
 import LoginStateResolver from './resolvers/developer/get-login-state';
 import type { WebsiteAPIContext } from './types';
 
@@ -24,7 +24,7 @@ export default async function registerWebsiteApi(server: MyFastifyInstance): Pro
       SetSymbolResolver,
       CreateUserResolver,
       LoginStateResolver,
-      CreateApplicationResolver,
+      ApplicationResolver,
     ],
   });
   const apolloServer = new ApolloServer({

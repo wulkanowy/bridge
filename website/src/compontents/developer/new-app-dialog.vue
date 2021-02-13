@@ -64,7 +64,9 @@ export default class NewAppDialog extends Vue {
 
   @Watch('value')
   valueChanged(value: boolean) {
-    if (!value) this.name = '';
+    if (value) return;
+    this.name = '';
+    this.error = false;
   }
 
   get valid() {

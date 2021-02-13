@@ -1,14 +1,14 @@
 /* eslint-disable class-methods-use-this */
 import { UserInputError } from 'apollo-server-fastify';
 import {
-  Arg, Ctx, Mutation, Resolver, UnauthorizedError,
+  Arg, Ctx, Mutation, Query, Resolver, UnauthorizedError,
 } from 'type-graphql';
 import Application from '../../../../database/entities/application';
 import ApplicationInfo from '../../models/application-info';
 import type { WebsiteAPIContext } from '../../types';
 
-@Resolver(() => ApplicationInfo)
-export default class CreateApplicationResolver {
+@Resolver()
+export default class ApplicationResolver {
   @Mutation(() => ApplicationInfo)
   public async createApplication(
     @Arg('name') name: string,
@@ -28,8 +28,33 @@ export default class CreateApplicationResolver {
     application.name = name;
     await application.save();
 
-    return {
-      id: application._id.toHexString(),
-    };
+    return ApplicationInfo.fromEntity(application);
+  }
+
+  @Query(() => [ApplicationInfo])
+  public async applications(
+    @Ctx() { sessionData }: WebsiteAPIContext,
+  ): Promise<ApplicationInfo[]> {
+    if (!sessionData.loginState) throw new UnauthorizedError();
+    const applications = await Application.find({
+      where: {
+        developerId: sessionData.loginState.developerId,
+      },
+    });
+    return applications.map((app) => ApplicationInfo.fromEntity(app));
+  }
+
+  @Query(() => ApplicationInfo, {
+    nullable: true,
+  })
+  public async application(
+    @Arg('id') id: string,
+      @Ctx() { sessionData }: WebsiteAPIContext,
+  ): Promise<ApplicationInfo | null> {
+    if (!sessionData.loginState) throw new UnauthorizedError();
+    const application = await Application.findOne(id);
+    if (!application) return null;
+    if (!application.developerId.equals(sessionData.loginState.developerId)) throw new UnauthorizedError();
+    return ApplicationInfo.fromEntity(application);
   }
 }
