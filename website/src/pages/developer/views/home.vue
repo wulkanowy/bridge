@@ -53,7 +53,7 @@
 
 <style lang="scss">
   .home-container {
-    max-width: 1100px;
+    max-width: 800px;
 
     .applications {
       display: grid;
@@ -68,15 +68,15 @@
 import { Component, Vue } from 'vue-property-decorator';
 import AppIcon from '@/pages/app-icon.vue';
 import NewAppDialog from '@/compontents/developer/new-app-dialog.vue';
-import { Application } from '@/graphql/generated';
-import { sdk } from '@/pages/authenticate-prompt/sdk';
+import { GetApplicationsQuery } from '@/graphql/generated';
+import { sdk } from '@/graphql/sdk';
 
 @Component({
   name: 'DeveloperHome',
   components: { NewAppDialog, AppIcon },
 })
 export default class DeveloperHome extends Vue {
-  applications: Application[] | null = null;
+  applications: GetApplicationsQuery['applications'] | null = null;
 
   applicationError = false;
 

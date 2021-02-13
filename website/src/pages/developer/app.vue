@@ -45,7 +45,7 @@
         </v-menu>
       </v-app-bar>
       <v-main>
-        <router-view />
+        <router-view :login-state="loginState" />
       </v-main>
     </div>
   </v-app>
@@ -69,7 +69,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import DeveloperSignedOut from '@/pages/developer/views/signed-out.vue';
 import { LoginState } from '@/graphql/generated';
-import { sdk } from '@/pages/authenticate-prompt/sdk';
+import { sdk } from '@/graphql/sdk';
 
 @Component({
   name: 'DeveloperApp',

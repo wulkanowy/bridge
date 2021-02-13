@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { sdk } from '@/pages/authenticate-prompt/sdk';
+import { sdk } from '@/graphql/sdk';
 
 @Component({
   name: 'NewAppDialog',

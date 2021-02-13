@@ -68,6 +68,8 @@ export type Application = {
   name: Scalars['String'];
   iconUrl: Maybe<Scalars['String']>;
   iconColor: Scalars['String'];
+  homepage: Maybe<Scalars['String']>;
+  verified: Scalars['Boolean'];
 };
 
 export type LoginState = {
@@ -83,6 +85,7 @@ export type Mutation = {
   login: LoginResult;
   setSymbol: SetSymbolResult;
   createApplication: Application;
+  modifyApplication: Application;
 };
 
 export type MutationCreateUserArgs = {
@@ -105,6 +108,12 @@ export type MutationSetSymbolArgs = {
 
 export type MutationCreateApplicationArgs = {
   name: Scalars['String'];
+};
+
+export type MutationModifyApplicationArgs = {
+  homepage: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  id: Scalars['String'];
 };
 
 export type CreateUserResult = {
@@ -170,6 +179,20 @@ export type LoginMutation = (
   ); }
 );
 
+export type ModifyApplicationMutationVariables = Exact<{
+  id: Scalars['String'];
+  name: Scalars['String'];
+  homepage: Maybe<Scalars['String']>;
+}>;
+
+export type ModifyApplicationMutation = (
+  { __typename?: 'Mutation' }
+  & { modifyApplication: (
+    { __typename?: 'Application' }
+    & Pick<Application, 'name' | 'iconUrl' | 'iconColor' | 'homepage' | 'verified'>
+  ); }
+);
+
 export type SetSymbolMutationVariables = Exact<{
   promptId: Scalars['String'];
   symbol: Scalars['String'];
@@ -185,6 +208,18 @@ export type SetSymbolMutation = (
       & Pick<LoginStudent, 'studentId' | 'name'>
     )>; }
   ); }
+);
+
+export type GetApplicationQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+export type GetApplicationQuery = (
+  { __typename?: 'Query' }
+  & { application: Maybe<(
+    { __typename?: 'Application' }
+    & Pick<Application, 'name' | 'iconUrl' | 'iconColor' | 'homepage' | 'verified'>
+  )>; }
 );
 
 export type GetApplicationsQueryVariables = Exact<{ [key: string]: never }>;
@@ -254,6 +289,17 @@ export const LoginDocument = gql`
   }
 }
     `;
+export const ModifyApplicationDocument = gql`
+    mutation ModifyApplication($id: String!, $name: String!, $homepage: String) {
+  modifyApplication(id: $id, name: $name, homepage: $homepage) {
+    name
+    iconUrl
+    iconColor
+    homepage
+    verified
+  }
+}
+    `;
 export const SetSymbolDocument = gql`
     mutation SetSymbol($promptId: String!, $symbol: String!) {
   setSymbol(promptId: $promptId, symbol: $symbol) {
@@ -262,6 +308,17 @@ export const SetSymbolDocument = gql`
       name
     }
     registered
+  }
+}
+    `;
+export const GetApplicationDocument = gql`
+    query GetApplication($id: String!) {
+  application(id: $id) {
+    name
+    iconUrl
+    iconColor
+    homepage
+    verified
   }
 }
     `;
@@ -320,8 +377,14 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     Login(variables: LoginMutationVariables, requestHeaders?: Headers): Promise<LoginMutation> {
       return withWrapper(() => client.request<LoginMutation>(print(LoginDocument), variables, requestHeaders));
     },
+    ModifyApplication(variables: ModifyApplicationMutationVariables, requestHeaders?: Headers): Promise<ModifyApplicationMutation> {
+      return withWrapper(() => client.request<ModifyApplicationMutation>(print(ModifyApplicationDocument), variables, requestHeaders));
+    },
     SetSymbol(variables: SetSymbolMutationVariables, requestHeaders?: Headers): Promise<SetSymbolMutation> {
       return withWrapper(() => client.request<SetSymbolMutation>(print(SetSymbolDocument), variables, requestHeaders));
+    },
+    GetApplication(variables: GetApplicationQueryVariables, requestHeaders?: Headers): Promise<GetApplicationQuery> {
+      return withWrapper(() => client.request<GetApplicationQuery>(print(GetApplicationDocument), variables, requestHeaders));
     },
     GetApplications(variables?: GetApplicationsQueryVariables, requestHeaders?: Headers): Promise<GetApplicationsQuery> {
       return withWrapper(() => client.request<GetApplicationsQuery>(print(GetApplicationsDocument), variables, requestHeaders));

@@ -54,7 +54,7 @@ import {
   Component, Prop, Ref, Vue,
 } from 'vue-property-decorator';
 import { PromptInfo, VForm } from '@/types';
-import { hasErrorCode, sdk } from '@/pages/authenticate-prompt/sdk';
+import { hasErrorCode, sdk } from '@/graphql/sdk';
 import { InputValidationRules } from 'vuetify';
 import VueRecaptcha from 'vue-recaptcha';
 import { requireEnv } from '@/utils';

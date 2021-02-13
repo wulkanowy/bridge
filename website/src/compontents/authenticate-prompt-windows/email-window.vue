@@ -50,7 +50,7 @@ import {
 import { InputValidationRules } from 'vuetify';
 import IsEmail from 'isemail';
 import { PromptInfo, VForm } from '@/types';
-import { sdk } from '@/pages/authenticate-prompt/sdk';
+import { sdk } from '@/graphql/sdk';
 
 @Component({
   name: 'EmailWindow',

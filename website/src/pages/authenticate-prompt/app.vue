@@ -110,7 +110,7 @@ import OverviewWindow from '@/compontents/authenticate-prompt-windows/overview-w
 import { PromptInfo, Student } from '@/types';
 import LoginWindow from '@/compontents/authenticate-prompt-windows/login-window.vue';
 import StudentsWindow from '@/compontents/authenticate-prompt-windows/students-window.vue';
-import { sdk } from '@/pages/authenticate-prompt/sdk';
+import { sdk } from '@/graphql/sdk';
 import DialogApp from '@/compontents/dialog-app.vue';
 import EmailWindow from '@/compontents/authenticate-prompt-windows/email-window.vue';
 import SymbolsWindow from '@/compontents/authenticate-prompt-windows/symbols-window.vue';

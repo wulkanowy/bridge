@@ -74,7 +74,7 @@ import {
   Component, Prop, Ref, Vue,
 } from 'vue-property-decorator';
 import { PromptInfo, VForm } from '@/types';
-import { hasErrorCode, sdk } from '@/pages/authenticate-prompt/sdk';
+import { hasErrorCode, sdk } from '@/graphql/sdk';
 
 // This is a JS Symbol, not a diary symbol
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol)

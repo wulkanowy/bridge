@@ -31,3 +31,11 @@ export class InvalidSymbolError extends ApolloError {
     super('Invalid symbol', 'INVALID_SYMBOL');
   }
 }
+
+export class ApplicationNotFoundError extends ApolloError {
+  public name = 'ApplicationNotFoundError';
+
+  public constructor() {
+    super('Application not found', 'APPLICATION_NOT_FOUND_ERROR');
+  }
+}
