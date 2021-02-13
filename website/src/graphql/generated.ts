@@ -18,11 +18,17 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query';
   promptInfo: PromptInfo;
+  applications: Array<Application>;
+  application: Maybe<Application>;
   loginState: Maybe<LoginState>;
 };
 
 export type QueryPromptInfoArgs = {
   promptId: Scalars['String'];
+};
+
+export type QueryApplicationArgs = {
+  id: Scalars['String'];
 };
 
 export type PromptInfo = {
@@ -56,6 +62,14 @@ export type GitHubUser = {
   url: Scalars['String'];
 };
 
+export type Application = {
+  __typename?: 'Application';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  iconUrl: Maybe<Scalars['String']>;
+  iconColor: Scalars['String'];
+};
+
 export type LoginState = {
   __typename?: 'LoginState';
   name: Maybe<Scalars['String']>;
@@ -68,7 +82,7 @@ export type Mutation = {
   createUser: CreateUserResult;
   login: LoginResult;
   setSymbol: SetSymbolResult;
-  createApplication: ApplicationInfo;
+  createApplication: Application;
 };
 
 export type MutationCreateUserArgs = {
@@ -115,11 +129,6 @@ export type LoginStudent = {
   name: Scalars['String'];
 };
 
-export type ApplicationInfo = {
-  __typename?: 'ApplicationInfo';
-  id: Scalars['String'];
-};
-
 export type CreateApplicationMutationVariables = Exact<{
   name: Scalars['String'];
 }>;
@@ -127,8 +136,8 @@ export type CreateApplicationMutationVariables = Exact<{
 export type CreateApplicationMutation = (
   { __typename?: 'Mutation' }
   & { createApplication: (
-    { __typename?: 'ApplicationInfo' }
-    & Pick<ApplicationInfo, 'id'>
+    { __typename?: 'Application' }
+    & Pick<Application, 'id'>
   ); }
 );
 
@@ -176,6 +185,16 @@ export type SetSymbolMutation = (
       & Pick<LoginStudent, 'studentId' | 'name'>
     )>; }
   ); }
+);
+
+export type GetApplicationsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetApplicationsQuery = (
+  { __typename?: 'Query' }
+  & { applications: Array<(
+    { __typename?: 'Application' }
+    & Pick<Application, 'id' | 'name' | 'iconUrl' | 'iconColor'>
+  )>; }
 );
 
 export type GetLoginStateQueryVariables = Exact<{ [key: string]: never }>;
@@ -246,6 +265,16 @@ export const SetSymbolDocument = gql`
   }
 }
     `;
+export const GetApplicationsDocument = gql`
+    query GetApplications {
+  applications {
+    id
+    name
+    iconUrl
+    iconColor
+  }
+}
+    `;
 export const GetLoginStateDocument = gql`
     query GetLoginState {
   loginState {
@@ -293,6 +322,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     SetSymbol(variables: SetSymbolMutationVariables, requestHeaders?: Headers): Promise<SetSymbolMutation> {
       return withWrapper(() => client.request<SetSymbolMutation>(print(SetSymbolDocument), variables, requestHeaders));
+    },
+    GetApplications(variables?: GetApplicationsQueryVariables, requestHeaders?: Headers): Promise<GetApplicationsQuery> {
+      return withWrapper(() => client.request<GetApplicationsQuery>(print(GetApplicationsDocument), variables, requestHeaders));
     },
     GetLoginState(variables?: GetLoginStateQueryVariables, requestHeaders?: Headers): Promise<GetLoginStateQuery> {
       return withWrapper(() => client.request<GetLoginStateQuery>(print(GetLoginStateDocument), variables, requestHeaders));

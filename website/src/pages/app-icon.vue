@@ -49,9 +49,9 @@ export default class AppIcon extends Vue {
 
   @Prop({
     type: String,
-    required: true,
+    default: null,
   })
-  url!: string;
+  url!: string | null
 
   @Prop({
     type: Boolean,
