@@ -1,11 +1,11 @@
 import type { Connection } from 'typeorm';
 import { createConnection } from 'typeorm';
 import { requireEnv } from '../utils';
-import Application from './entities/application';
-import Client from './entities/client';
-import Developer from './entities/developer';
-import Token from './entities/token';
-import User from './entities/user';
+import ApplicationEntity from './entities/application';
+import ClientEntity from './entities/client';
+import DeveloperEntity from './entities/developer';
+import TokenEntity from './entities/token';
+import UserEntity from './entities/user';
 
 class Database {
   private connection!: Connection;
@@ -16,11 +16,11 @@ class Database {
       url: requireEnv('DATABASE_URL'),
       useNewUrlParser: true,
       entities: [
-        Application,
-        User,
-        Token,
-        Developer,
-        Client,
+        ApplicationEntity,
+        UserEntity,
+        TokenEntity,
+        DeveloperEntity,
+        ClientEntity,
       ],
       useUnifiedTopology: true,
       logging: false,

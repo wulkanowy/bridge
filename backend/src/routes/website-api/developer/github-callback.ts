@@ -1,5 +1,5 @@
 import got from 'got';
-import Developer from '../../../database/entities/developer';
+import DeveloperEntity from '../../../database/entities/developer';
 import { ParamError } from '../../../errors';
 import { getViewer } from '../../../graphql/github/sdk';
 import type SessionData from '../../../session-data';
@@ -67,13 +67,13 @@ export default function registerGitHubCallback(server: MyFastifyInstance): void 
       });
       const viewer = await getViewer(response.body.access_token, response.body.token_type);
       console.log(viewer);
-      let developer = await Developer.findOne({
+      let developer = await DeveloperEntity.findOne({
         where: {
           gitHubId: viewer.id,
         },
       });
       if (!developer) {
-        developer = new Developer();
+        developer = new DeveloperEntity();
         developer.gitHubId = viewer.id;
       }
       developer.gitHubLogin = viewer.login;

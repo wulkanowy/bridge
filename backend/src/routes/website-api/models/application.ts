@@ -1,8 +1,8 @@
 import { Field, ObjectType } from 'type-graphql';
-import type Application from '../../../database/entities/application';
+import type ApplicationEntity from '../../../database/entities/application';
 
 @ObjectType()
-export default class ApplicationInfo {
+export default class Application {
   @Field(() => String)
   public id!: string;
 
@@ -17,7 +17,7 @@ export default class ApplicationInfo {
   @Field(() => String)
   public iconColor!: string;
 
-  public static fromEntity(entity: Application): ApplicationInfo {
+  public static fromEntity(entity: ApplicationEntity): Application {
     return {
       id: entity._id.toHexString(),
       iconColor: entity.iconColor,

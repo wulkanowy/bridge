@@ -3,23 +3,23 @@ import { UserInputError } from 'apollo-server-fastify';
 import {
   Arg, Ctx, Mutation, Query, Resolver, UnauthorizedError,
 } from 'type-graphql';
-import Application from '../../../../database/entities/application';
-import ApplicationInfo from '../../models/application-info';
+import ApplicationEntity from '../../../../database/entities/application';
+import Application from '../../models/application';
 import type { WebsiteAPIContext } from '../../types';
 
 @Resolver()
 export default class ApplicationResolver {
-  @Mutation(() => ApplicationInfo)
+  @Mutation(() => Application)
   public async createApplication(
     @Arg('name') name: string,
       @Ctx() { sessionData }: WebsiteAPIContext,
-  ): Promise<ApplicationInfo> {
+  ): Promise<Application> {
     if (!sessionData.loginState) throw new UnauthorizedError();
     if (name !== name.trim()) throw new UserInputError('Name should be trimmed');
     if (name.trim().length < 3) throw new UserInputError('Name is too short');
     if (name.trim().length > 32) throw new UserInputError('Name is too long');
 
-    const application = new Application();
+    const application = new ApplicationEntity();
     application.developerId = sessionData.loginState.developerId;
     application.homepage = null;
     application.verified = false;
@@ -28,33 +28,33 @@ export default class ApplicationResolver {
     application.name = name;
     await application.save();
 
-    return ApplicationInfo.fromEntity(application);
+    return Application.fromEntity(application);
   }
 
-  @Query(() => [ApplicationInfo])
+  @Query(() => [Application])
   public async applications(
     @Ctx() { sessionData }: WebsiteAPIContext,
-  ): Promise<ApplicationInfo[]> {
+  ): Promise<Application[]> {
     if (!sessionData.loginState) throw new UnauthorizedError();
-    const applications = await Application.find({
+    const applications = await ApplicationEntity.find({
       where: {
         developerId: sessionData.loginState.developerId,
       },
     });
-    return applications.map((app) => ApplicationInfo.fromEntity(app));
+    return applications.map((app) => Application.fromEntity(app));
   }
 
-  @Query(() => ApplicationInfo, {
+  @Query(() => Application, {
     nullable: true,
   })
   public async application(
     @Arg('id') id: string,
       @Ctx() { sessionData }: WebsiteAPIContext,
-  ): Promise<ApplicationInfo | null> {
+  ): Promise<Application | null> {
     if (!sessionData.loginState) throw new UnauthorizedError();
-    const application = await Application.findOne(id);
+    const application = await ApplicationEntity.findOne(id);
     if (!application) return null;
     if (!application.developerId.equals(sessionData.loginState.developerId)) throw new UnauthorizedError();
-    return ApplicationInfo.fromEntity(application);
+    return Application.fromEntity(application);
   }
 }

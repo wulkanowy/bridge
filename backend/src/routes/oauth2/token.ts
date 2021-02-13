@@ -1,7 +1,7 @@
 import type { FastifyReply } from 'fastify';
 import { getCode, invalidateCode } from '../../codes';
-import Client from '../../database/entities/client';
-import Token from '../../database/entities/token';
+import ClientEntity from '../../database/entities/client';
+import TokenEntity from '../../database/entities/token';
 import { ParamError } from '../../errors';
 import type { CodeInfo, MyFastifyInstance, TokenContent } from '../../types';
 
@@ -67,7 +67,7 @@ export default function registerToken(server: MyFastifyInstance): void {
         return;
       }
 
-      const client = await Client.findOne({
+      const client = await ClientEntity.findOne({
         where: {
           clientId: request.body.client_id,
         },
@@ -102,9 +102,9 @@ export default function registerToken(server: MyFastifyInstance): void {
         }
       }
 
-      const tokenId = Token.generateTokenId();
+      const tokenId = TokenEntity.generateTokenId();
 
-      const token = new Token();
+      const token = new TokenEntity();
       token.tokenId = tokenId;
       token.creationDate = new Date();
       token.clientId = codeInfo.clientId;

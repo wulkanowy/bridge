@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import urlJoin from 'url-join';
 import { scopes, websitePrefix } from '../../constants';
-import Client from '../../database/entities/client';
+import ClientEntity from '../../database/entities/client';
 import { ParamError, ScopeError } from '../../errors';
 import type { MyFastifyInstance, StudentsMode } from '../../types';
 
@@ -42,7 +42,7 @@ export default function registerAuthorize(server: MyFastifyInstance): void {
       return;
     }
 
-    const client = await Client.findOne({
+    const client = await ClientEntity.findOne({
       where: {
         clientId: request.query.client_id,
       },

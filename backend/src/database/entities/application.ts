@@ -5,7 +5,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export default class Application extends BaseEntity {
+export default class ApplicationEntity extends BaseEntity {
   @ObjectIdColumn()
   public _id!: ObjectID;
 
