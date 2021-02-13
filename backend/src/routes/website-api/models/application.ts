@@ -17,12 +17,22 @@ export default class Application {
   @Field(() => String)
   public iconColor!: string;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  public homepage!: string | null;
+
+  @Field(() => Boolean)
+  public verified!: boolean;
+
   public static fromEntity(entity: ApplicationEntity): Application {
     return {
       id: entity._id.toHexString(),
       iconColor: entity.iconColor,
       iconUrl: entity.iconUrl,
       name: entity.name,
+      homepage: entity.homepage,
+      verified: entity.verified,
     };
   }
 }
