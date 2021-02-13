@@ -3,7 +3,9 @@ import {
   BaseEntity, Column, Entity, ObjectIdColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'developers',
+})
 export default class DeveloperEntity extends BaseEntity {
   @ObjectIdColumn()
   public _id!: ObjectID;

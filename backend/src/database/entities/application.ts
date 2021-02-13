@@ -4,7 +4,9 @@ import {
   Column, Entity, ObjectIdColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'applications',
+})
 export default class ApplicationEntity extends BaseEntity {
   @ObjectIdColumn()
   public _id!: ObjectID;
